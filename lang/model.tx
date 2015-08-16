@@ -1,0 +1,76 @@
+/*
+    Description of model.
+*/
+
+Model:
+    'model' name=ID '{'
+        entities+=Class
+        actions*=Action
+    '}'
+;
+
+Class:
+    'class' name=ID '{'
+        (session="session")?
+        properties+=Property
+        actions*=Action
+    '}'
+;
+
+Property:
+    name=ID ':' type=[PropertyType] (list="list")? ('(' arguments*=PropertyArgument[','] ')')?
+;
+
+PropertyType:
+    "string" | "int" | "date" | "float" | Class
+;
+
+PropertyArgument:
+    name=ID ('=' value=BASETYPE)?
+;
+
+Action:
+    '#' name=ID '(' expression=ActionExpression ')'
+;
+
+ActionExpression:
+    first_operand=First operator=ActionOperator second_operand=Expression
+;
+
+First:
+    "this" | ID
+;
+
+Second:
+    BASETYPE | ID | Expression
+;
+
+Expression:
+    ExpressionFirstPart | ID
+;
+
+ExpressionFirstPart:
+    first_operand=ComplexName rest*=ExpressionRest
+;
+
+ComplexName:
+    /*[Class] '.' ID | [Class] '.' 'object' '.' ID | ID '.' 'object' '.' ID*/
+    name=ID ('.' ID)*
+;
+
+ExpressionRest:
+    operator=ExpressionOperator name=ComplexName
+;
+
+ExpressionSecondPart:
+    operator=ExpressionOperator second_operand=ComplexName
+;
+
+ActionOperator:
+    "-> add" | "-> del" | "->" | "="
+;
+
+ExpressionOperator:
+     "+=" | "-=" | "*=" | "/="| "*" | "/" | "+" | "-"
+;
+
