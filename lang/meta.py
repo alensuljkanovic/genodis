@@ -11,13 +11,14 @@ class Model(object):
     Python representation of model defined in grammar.
     """
 
-    def __init__(self, name, entities, actions=None):
+    def __init__(self, name, entities, actions=None, bindings=None):
         """
         Initialization of model
         """
         self.name = name
         self.entities = entities
         self.actions = actions if actions else []
+        self.bindings = bindings if bindings else []
 
     def __str__(self):
         return "Model(%s), entities: %s, actions %s" % (self.name,
@@ -29,7 +30,8 @@ class Class(object):
     """
     Python representation of entity defined in grammar.
     """
-    def __init__(self, parent, name, properties, session, actions=None):
+    def __init__(self, parent, name, properties, session, actions=None,
+                 bindings=None):
         """
         Initialization of entity.
         """
@@ -38,6 +40,7 @@ class Class(object):
         self.properties = properties
         self.actions = actions if actions else []
         self.session = True if session else False
+        self.bindings = bindings if bindings else []
 
     def __str__(self):
         return self.name
@@ -115,7 +118,8 @@ def get_model_meta():
     Gets model meta-model.
     """
     global _model_meta
-    _model_meta = metamodel_from_file(os.path.join("lang", "model.tx"),
+    _model_meta = metamodel_from_file(os.path.join(os.path.dirname(__file__),
+                                                   "model.tx"),
                                       classes=_classes)
     _model_meta.register_obj_processors(obj_processors)
     return _model_meta

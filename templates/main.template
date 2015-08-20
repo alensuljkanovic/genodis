@@ -1,0 +1,9 @@
+{#-  Main template for code generation -#}
+
+""" generated using template: main.template----------------------------
+
+       NOTE: Automatically generated file. DO NOT MODIFY!
+
+"""
+
+{% include "django_app.template" %}

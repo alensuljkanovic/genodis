@@ -60,3 +60,6 @@ target/
 
 # Ignore PyCharm config files
 .idea
+
+# Ignore generated files
+src_gen/

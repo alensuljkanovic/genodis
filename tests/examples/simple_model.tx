@@ -32,6 +32,9 @@ model Supermarket {
         products : Product list
         total_price: float
 
+        #bind(total_price, products){
+            total_price = products.size * products.object.price
+        }
 
     }
 

@@ -6,6 +6,7 @@ Model:
     'model' name=ID '{'
         entities+=Class
         actions*=Action
+        bindings*=Binding
     '}'
 ;
 
@@ -14,6 +15,7 @@ Class:
         (session="session")?
         properties+=Property
         actions*=Action
+        bindings*=Binding
     '}'
 ;
 
@@ -74,3 +76,16 @@ ExpressionOperator:
      "+=" | "-=" | "*=" | "/="| "*" | "/" | "+" | "-"
 ;
 
+Binding:
+    '#bind' '(' parameters*=BindingParameters[','] ')' '{'
+        code=BindingCode
+    '}'
+;
+
+BindingParameters:
+    name=ID ('.' ID)*
+;
+
+BindingCode:
+    /^(.|\n)*?(?=})/
+;
