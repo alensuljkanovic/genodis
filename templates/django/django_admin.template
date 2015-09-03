@@ -1,0 +1,14 @@
+"""
+--------- generated using template: django/django_admin.template  -----------
+"""
+
+from django.contrib import admin
+from {{model.name|lower}}_app.models import
+{%- for c in model.classes -%}
+{{" "}}{{c.name}}
+{%- if loop.index != model.classes|length -%}{{","}}{%- endif -%}
+{%- endfor %}
+
+{% for c in model.classes %}
+admin.site.register({{c.name}})
+{%- endfor %}

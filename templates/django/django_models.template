@@ -1,0 +1,26 @@
+"""
+--------- generated using template: django/django_models.template  -----------
+"""
+from django.db import models
+
+{%- macro create_property(prop) -%}
+{{prop.name}} = models.{{prop.django_field}}(
+{%- for arg in prop.arguments -%}
+{{arg}}
+{%- if loop.index != prop.arguments|length -%}{{","}}{%- endif -%}
+{%- endfor -%}
+)
+{%- endmacro %}
+
+{% for c in model.classes %}
+class {{c.name}}(models.Model):
+    {%- if c.foreign_key %}
+    {{c.foreign_key.name|lower}} = models.ForeignKey({{c.foreign_key}})
+    {%- endif -%}
+    {%- for p in c.properties -%}
+        {%- if not p.list %}
+    {{create_property(p)}}
+        {%- endif -%}
+    {%- endfor %}
+
+{% endfor %}

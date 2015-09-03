@@ -1,0 +1,8 @@
+"""
+--------- generated using template: django/django_tests.template  -----------
+"""
+
+
+from django.test import TestCase
+
+# Create your tests here.

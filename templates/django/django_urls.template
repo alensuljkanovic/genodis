@@ -1,3 +1,63 @@
 """
 --------- generated using template: django/django_urls.template  -----------
 """
+
+"""{{model.name|lower}} URL Configuration
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/1.8/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  url(r'^$', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
+Including another URLconf
+    1. Add an import:  from blog import urls as blog_urls
+    2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
+"""
+
+from django.conf.urls import include, url
+from rest_framework import serializers, viewsets, routers
+from {{model.name|lower}}_app.models import
+{%- for c in model.classes -%}
+{{" "}}{{c.name}}
+{%- if loop.index != model.classes|length -%}{{","}}{%- endif -%}
+{%- endfor %}
+
+
+#
+# Serializers define the API representation.
+#
+{% for c in model.classes %}
+class {{c.name}}Serializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = {{c.name}}
+
+{% endfor -%}
+
+
+#
+# ViewSets define the view behavior.
+#
+{% for c in model.classes %}
+class {{c.name}}ViewSet(viewsets.ModelViewSet):
+    queryset = {{c.name}}.objects.all()
+    serializer_class = {{c.name}}Serializer
+
+{% endfor -%}
+
+#
+# Routers provide an easy way of automatically determining the URL conf.
+#
+router = routers.DefaultRouter()
+{%- for c in model.classes %}
+router.register(r'{{c.name|lower}}s', {{c.name}}ViewSet)
+{%- endfor %}
+
+urlpatterns = [
+    url(r'^', include(router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+]
+

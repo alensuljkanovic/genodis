@@ -4,7 +4,7 @@
 
 Model:
     'model' name=ID '{'
-        entities+=Class
+        classes+=Class
         actions*=Action
         bindings*=Binding
     '}'

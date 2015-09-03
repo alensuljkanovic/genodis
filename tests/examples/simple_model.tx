@@ -1,30 +1,30 @@
 model Supermarket {
 
     class Supermarket{
-        name : string(min=3, max_lenght=15)
+        name : string(max_length=15)
         employees : Employee list
         products : Product list
         buyers : Buyer list
     }
 
     class Employee{
-        first_name : string(min_length=3, max_length=15)
-        last_name : string(min_length=3, max_length=15)
-        age : int(min_value=15, max_value=65)
+        first_name : string(max_length=15)
+        last_name : string(max_length=15)
+        age : int()
     }
 
     class Product{
-        simple_name : string(min_length=3, max_length=15)
-        generic_name : string(min_length=3, max_length=35)
-        serial_number: string(min_length=10, max_length=35)
-        price: float(min_value=0)
+        simple_name : string(max_length=15)
+        generic_name : string(max_length=35)
+        serial_number: string(max_length=35)
+        price: float()
 
         #add_to_cart(this -> Cart.products)
     }
 
     class Buyer{
-        username : string(unique, min_length=5, max_lenght=10)
-        password : string(min_length=5)
+        username : string(unique, max_length=10)
+        password : string(max_length=20)
     }
 
     class Cart{

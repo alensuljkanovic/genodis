@@ -1,7 +1,7 @@
 import os
 from textx.metamodel import metamodel_from_file
 from lang.obj_processors import model_processor, class_processor, \
-    property_processor, action_processor
+    property_processor, action_processor, property_argument_processor
 
 __author__ = 'Alen Suljkanovic'
 
@@ -11,18 +11,18 @@ class Model(object):
     Python representation of model defined in grammar.
     """
 
-    def __init__(self, name, entities, actions=None, bindings=None):
+    def __init__(self, name, classes, actions=None, bindings=None):
         """
         Initialization of model
         """
         self.name = name
-        self.entities = entities
+        self.classes = classes
         self.actions = actions if actions else []
         self.bindings = bindings if bindings else []
 
     def __str__(self):
         return "Model(%s), entities: %s, actions %s" % (self.name,
-                                                        self.entities,
+                                                        self.classes,
                                                         self.actions)
 
 
@@ -30,6 +30,7 @@ class Class(object):
     """
     Python representation of entity defined in grammar.
     """
+
     def __init__(self, parent, name, properties, session, actions=None,
                  bindings=None):
         """
@@ -41,6 +42,13 @@ class Class(object):
         self.actions = actions if actions else []
         self.session = True if session else False
         self.bindings = bindings if bindings else []
+
+        # Dictionary that describes relationship of one class with others.
+        # Key is name of referenced class and value shows how many times
+        # given class has been referenced.
+        self.references = {}
+
+        self.foreign_key = None
 
     def __str__(self):
         return self.name
@@ -74,7 +82,7 @@ class PropertyArgument(object):
         self.value = value
 
     def __str__(self):
-        return "%s = %s" % (self.name, self.value)
+        return "%s=%s" % (self.name, self.value)
 
 
 class Action(object):
@@ -108,6 +116,7 @@ obj_processors = {
     "Class": class_processor,
     "Property": property_processor,
     "Action": action_processor,
+    "PropertyArgument": property_argument_processor,
 }
 
 _model_meta = None
