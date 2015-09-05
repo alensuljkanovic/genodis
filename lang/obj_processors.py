@@ -1,3 +1,5 @@
+from lang.validators import TextValidator, DecimalValidator, BaseValidator
+
 __author__ = 'Alen Suljkanovic'
 
 
@@ -12,13 +14,35 @@ def property_processor(property):
     """
     Property processor
     """
+    def resolve_date(args):
+        for arg in args:
+            if arg.name == "format":
+                print("format value %s" % arg.value)
+
+    def _validate(prop):
+        validator = None
+        if prop.type == "string":
+            validator = TextValidator(prop)
+        elif prop.type == "decimal":
+            validator = DecimalValidator(prop)
+        else:
+            validator = BaseValidator(prop)
+
+        validator.validate()
+
+    _validate(property)
+
     if not hasattr(property, "django_field"):
         setattr(property, "django_field", None)
 
     django_mappings = {
         "string": "CharField",
+        "text": "TextField",
         "int": "IntegerField",
-        "float": "FloatField"
+        "float": "FloatField",
+        "decimal": "DecimalField",
+        "date": "DateField",
+        "datetime": "DateTimeField"
     }
 
     if property.type in django_mappings:

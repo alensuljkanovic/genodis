@@ -10,14 +10,17 @@ model Supermarket {
     class Employee{
         first_name : string(max_length=15)
         last_name : string(max_length=15)
-        age : int()
+        date_of_birth: date
+        age : int
+        paycheck : decimal(decimal_places=2, max_digits=10)
+        notes : text
     }
 
     class Product{
         simple_name : string(max_length=15)
         generic_name : string(max_length=35)
         serial_number: string(max_length=35)
-        price: float()
+        price: float
 
         #add_to_cart(this -> Cart.products)
     }

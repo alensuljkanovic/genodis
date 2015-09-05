@@ -12,6 +12,7 @@ Model:
 
 Class:
     'class' name=ID '{'
+        // shows if class should be persisted
         (session="session")?
         properties+=Property
         actions*=Action
@@ -24,7 +25,7 @@ Property:
 ;
 
 PropertyType:
-    "string" | "int" | "date" | "float" | Class
+    "string" | "text" | "int" | "float" | "decimal"| "datetime" | "date" | "combo" | Class
 ;
 
 PropertyArgument:
