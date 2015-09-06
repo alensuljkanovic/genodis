@@ -1,0 +1,147 @@
+(function () {
+    'use strict';
+    var main_module = angular.module("myApp");
+
+    main_module.controller("{{c.name}}Controller", function($scope, $http){
+        $scope.{{c.name|lower}}s = [];
+
+        // URL is set to localhost
+        $http.get("http://127.0.0.1:8000/{{c.name|lower}}s/").
+              then(function(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                for(var i =0; i < response.data.length; i++){
+                    var s = response.data[i];
+
+                    // get rid of the last '/' in url.
+                    // for example http://127.0.0.1:8000/supermarkets/2/ will
+                    // become: http://127.0.0.1:8000/supermarkets/2
+                    var urlPart = s.url.substring(0,  s.url.length-1);
+                    // get the index of last '/' in url (one before the start of
+                    // the id)
+                    var index = urlPart.lastIndexOf("/") + 1;
+                    // substring the id
+                    s.id = urlPart.substr(index, urlPart.length);
+                    $scope.{{c.name|lower}}s.push(s);
+                }
+              }, function(response) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                alert("Error!" + JSON.stringify(response));
+              });
+
+        // Available states are:
+        // 0 or "add" state,
+        // 1 or "edit" state,
+        // 2 or "search" state.
+        //initial state is 0
+
+        $scope.add{{c.name}} = function(){
+
+            var newObj = {
+                {%- for prop in c.properties %}
+                {{prop.name}}: $scope.new{{c.name}}.{{prop.name}}
+                {%- if loop.index != c.properties|length -%}{{","}}{%- endif -%}
+                {% endfor -%}
+            };
+
+            $http.post("http://127.0.0.1:8000/{{c.name|lower}}s/", newObj).
+                then(function(response){
+                    // Success
+                    //newObj.id = next_id;
+                    $scope.{{c.name|lower}}s.push(newObj);
+                }, function(response){
+                    alert("Error: " + JSON.stringify(response))
+            });
+        };
+
+        $scope.delete{{c.name}} = function({{c.name|lower}}){
+            var url = "http://127.0.0.1:8000/{{c.name|lower}}s/" + {{c.name|lower}}.id  + "/";
+            $http.delete(url)
+                .then(function(response){
+                    var index = $scope.{{c.name|lower}}s.indexOf({{c.name|lower}});
+                    $scope.{{c.name|lower}}s.splice(index, 1);
+                }, function(response){
+                    alert(JSON.stringify(response));
+                });
+        };
+
+        $scope.update{{c.name}} = function(id,
+        {%- for prop in c.properties -%}
+        {{prop.name}}
+        {%- if loop.index != c.properties|length -%}{{","}}{%- endif -%}
+        {%- endfor -%}
+        ){
+            var index;
+            var url = "http://127.0.0.1:8000/{{c.name|lower}}s/" + id  + "/";
+            for(index in $scope.{{c.name|lower}}s) {
+                var s = $scope.{{c.name|lower}}s[index];
+                if (s.id == id) {
+
+                    var obj = {
+                        {%- for prop in c.properties %}
+                        {{prop.name}}: s.{{prop.name}}
+                        {%- if loop.index != c.properties|length -%}{{","}}{%- endif -%}
+                        {%- endfor %}
+                    };
+
+                    $http.put(url, obj)
+                        .then(function(response){
+                            var s = $scope.{{c.name|lower}}s[index];
+                            {%- for prop in c.properties %}
+                            s.{{prop.name}} = {{prop.name}};
+                            {% endfor -%}
+                            alert("Success");
+                        }, function(error){
+                            alert(JSON.stringify(error));
+                        });
+                }
+            }
+        };
+
+        $scope.search{{c.name}} = function(id,
+        {%- for prop in c.properties -%}
+        {{prop.name}}
+        {%- if loop.index != c.properties|length -%}{{","}}{%- endif -%}
+        {%- endfor -%}
+        ){
+            var index;
+            var results = [];
+            for(index in $scope.{{c.name|lower}}s) {
+                var s = $scope.{{c.name|lower}}s[index];
+                if (s.id == id) {
+                    results.push(s);
+                }
+            }
+            alert(results);
+            $scope.supermarketi = results;
+        };
+
+        $scope.row_clicked = function({{c.name|lower}}){
+            if($scope.state == 1){
+                $scope.new{{c.name}} = {{c.name|lower}}
+            }
+        };
+
+        $scope.set_state = function(new_state){
+            $scope.state = new_state;
+
+            if($scope.state == 0){
+                $scope.btn_visibility_add = {"display": "inline"};
+                $scope.btn_visibility_edit= {"display": "none"};
+                $scope.btn_visibility_search = {"display": "none"};
+            }else if($scope.state == 1){
+                $scope.btn_visibility_add = {"display": "none"};
+                $scope.btn_visibility_edit= {"display": "inline"};
+                $scope.btn_visibility_search = {"display": "none"};
+            }else{
+                $scope.btn_visibility_add = {"display": "none"};
+                $scope.btn_visibility_edit= {"display": "none"};
+                $scope.btn_visibility_search = {"display": "inline"};
+            }
+        };
+        // Init state is "add"
+        $scope.set_state(0)
+        });
+
+}());

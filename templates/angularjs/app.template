@@ -1,0 +1,21 @@
+'use strict';
+
+var main_module = angular.module("myApp", ["ngRoute"]);
+
+main_module.config(function($routeProvider){
+    $routeProvider
+        {%- for c in model.classes %}
+        .when(
+            "/{{c.name|lower}}",
+            {
+                controller:"{{c.name}}Controller",
+                templateUrl: "views/{{c.name|lower}}s.html"
+            })
+        {% endfor -%}
+        .otherwise({redirectTo: "/{{model.classes[0].name|lower}}"})
+});
+
+main_module.controller("mainController", function($scope){
+    $scope.message = "";
+});
+

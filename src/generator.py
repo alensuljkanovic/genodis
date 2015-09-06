@@ -8,11 +8,12 @@ from src.consts import TEMPLATES_PATH, DJANGO_TEMPLATES, SRC_GEN_PATH, \
 __author__ = 'Alen Suljkanovic'
 
 
-class Generator(object):
+class BaseGenerator(object):
     """
-    Class that represents code generator for server and client.
+    Base generator which is inherited by all other generators.
     """
     def __init__(self, model):
+        super(BaseGenerator, self).__init__()
         self.model = model
 
     @staticmethod
@@ -24,16 +25,33 @@ class Generator(object):
         with open(init_path, "w") as f:
             f.write("")
 
-    def generate(self):
-
+    @staticmethod
+    def setup_env():
         root_path = os.path.dirname(__file__).replace("src", "")
         templates_path = os.path.join(root_path, TEMPLATES_PATH)
 
         file_loader = jinja2.FileSystemLoader(templates_path)
 
         jinja_env = jinja2.Environment(loader=file_loader)
+        return jinja_env
 
-        template = jinja_env.get_template("main.template")
+    def generate(self):
+        """
+        Generates code.
+        """
+        raise Exception("Not implemented!")
+
+
+class DjangoServerGenerator(BaseGenerator):
+    """
+    Generates django server.
+    """
+    def __init__(self, model):
+        super(DjangoServerGenerator, self).__init__(model)
+
+    def generate(self):
+        root_path = os.path.dirname(__file__).replace("src", "")
+        jinja_env = self.setup_env()
 
         d = {"model": self.model, "app_name": self.model.name.lower()}
 
@@ -119,6 +137,76 @@ class Generator(object):
             os.mkdir(view_templates)
 
 
+class AngularJSGenerator(BaseGenerator):
+    """
+    Generates AngularJS client app.
+    """
+    def __init__(self, model):
+        super(AngularJSGenerator, self).__init__(model)
+
+    def generate(self):
+        root_path = os.path.dirname(__file__).replace("src", "")
+        jinja_env = self.setup_env()
+
+        d = {"model": self.model, "app_name": self.model.name.lower()}
+
+        destination = os.path.join(root_path, SRC_GEN_PATH)
+
+        if not os.path.exists(destination):
+            os.mkdir(destination)
+
+        angular_app_name = self.model.name.lower() + "_js"
+        angular_path = os.path.join(destination, angular_app_name)
+        os.mkdir(angular_path)
+
+        # create app folder
+        angular_app = os.path.join(angular_path, "app")
+        os.mkdir(angular_app)
+
+
+        #
+        # Create app.js
+        #
+        template = jinja_env.get_template("angularjs/app.template")
+        template.stream(d).dump(os.path.join(angular_app, 'app.js'))
+
+        #
+        # Create app.css
+        #
+        template = jinja_env.get_template("angularjs/app_css.template")
+        template.stream(d).dump(os.path.join(angular_app, 'app.css'))
+
+        #
+        # Create index.html
+        #
+        template = jinja_env.get_template("angularjs/index.template")
+        template.stream(d).dump(os.path.join(angular_app, 'index.html'))
+
+        # create controllers folder
+        controllers_path = os.path.join(angular_app, "controllers")
+        os.mkdir(controllers_path)
+        #
+        # Create controllers for all classes
+        #
+        template = jinja_env.get_template("angularjs/controllers.template")
+        for c in self.model.classes:
+            ctlr_name = c.name.lower() + "_controller.js"
+            data = {"c": c}
+            template.stream(data).dump(os.path.join(controllers_path, ctlr_name))
+
+        # create views folder
+        views_path = os.path.join(angular_app, "views")
+        os.mkdir(views_path)
+        #
+        # Create views for all classes
+        #
+        template = jinja_env.get_template("angularjs/views.template")
+        for c in self.model.classes:
+            view_name = c.name.lower() + "s.html"
+            data = {"c": c}
+            template.stream(data).dump(os.path.join(views_path, view_name))
+
+
 if __name__ == "__main__":
     metamodel = get_model_meta()
 
@@ -126,5 +214,8 @@ if __name__ == "__main__":
     model_file = os.path.join(path, "tests", "examples", "simple_model.tx")
     model = metamodel.model_from_file(model_file)
 
-    generator = Generator(model)
-    generator.generate()
+    server_generator = DjangoServerGenerator(model)
+    server_generator.generate()
+
+    angular_generator = AngularJSGenerator(model)
+    angular_generator.generate()

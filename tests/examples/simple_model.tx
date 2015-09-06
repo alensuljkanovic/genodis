@@ -13,7 +13,6 @@ model Supermarket {
         last_name : string(max_length=15)
         date_of_birth: date
         age : int
-        paycheck : decimal(decimal_places=2, max_digits=10)
         notes : text
     }
 

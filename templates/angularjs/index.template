@@ -1,0 +1,45 @@
+<!-- index.html -->
+<!DOCTYPE html>
+
+<!-- define angular app -->
+<html ng-app="myApp">
+<head>
+  <!-- SCROLLS -->
+  <!-- load bootstrap and fontawesome via CDN -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css" />
+  <link rel="stylesheet" href="app.css" />
+  <!-- SPELLS -->
+  <!-- load angular via CDN -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
+      <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.js"></script>
+  <script src="app.js"></script>
+  {%- for c in model.classes %}
+  <script src="controllers/{{c.name|lower}}_controller.js"></script>
+  {% endfor -%}
+  <script src="actions.js"></script>
+
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+</head>
+
+<!-- define angular controller -->
+<body ng-controller="mainController">
+
+    <div>
+        <ul>
+            {%- for c in model.classes %}
+            <a href="#{{c.name|lower}}">{{c.name}}</a>
+            {% endfor -%}
+        </ul>
+    </div>
+    <!-- MAIN CONTENT AND INJECTED VIEWS -->
+    <div id="main">
+        <!-- angular templating -->
+        <!-- this is where content will be injected -->
+        <div ng-view></div>
+
+    </div>
+
+
+</body>
+</html>

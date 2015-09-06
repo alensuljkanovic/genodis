@@ -1,0 +1,83 @@
+<h3>{{c.name}}s</h3>
+
+<div class="row">
+  <div class="col-lg-6">
+    <div class="input-group">
+      <span class="input-group-btn">
+        <button class="btn btn-default" type="button" ng-click="set_state(0)"><span class="glyphicon glyphicon-plus"></span></button>
+        <button class="btn btn-default" type="button" ng-click="set_state(1)"><span class="glyphicon glyphicon-pencil"></span></button>
+        <button class="btn btn-default" type="button" ng-click="set_state(2)"><span class="glyphicon glyphicon-search" ></span></button>
+      </span>
+      <span class="input-group-btn">
+      </span>
+      <span class="input-group-btn">
+
+      </span>
+    </div><!-- /input-group -->
+  </div><!-- /.col-lg-6 -->
+</div><!-- /.row -->
+
+<br/>
+
+<div>
+    <table name="{{c.name|lower}}_table" class="table table-hover">
+        <tr>
+            <th>ID</th>
+            {%- if c.foreign_key %}
+            <th>{{c.foreign_key.name}}<th>
+            {%- endif -%}
+            {%- for prop in c.properties %}
+            {%- if not prop.list %}
+            <th>{{prop.name|upper}}</th>
+            {%- endif -%}
+            {%- endfor -%}
+            <th></th>
+        </tr>
+        <tr ng-repeat="s in {{c.name|lower}}s" ng-click="row_clicked(s)">
+            <td><a rel="stylesheet" href="details(s.id)">{%- raw -%}{{s.id}}{%- endraw -%}</a></td>
+            {%- if c.foreign_key %}
+            <td>{{c.foreign_key.name}}</td>
+            {%- endif -%}
+            {%- for prop in c.properties %}
+            {%- if not prop.list %}
+            <td>{%- raw -%}{{{%- endraw -%}s.{{prop.name}}{%- raw -%}}}{%- endraw -%}</td>
+            {%- endif -%}
+            {%- endfor %}
+            <td><button ng-click="delete{{c.name}}(s)"><span class="glyphicon glyphicon-trash"></span></button></td>
+        </tr>
+    </table>
+
+    <form class="form-horizontal" role="form" name="{{c.name|lower}}_form">
+        {%- if c.foreign_key %}
+        <div class="form-group">
+            <label class="control-label col-sm-2">{{c.foreign_key.name|upper}}:</label>
+            <div class="col-sm-5">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+                <ul id="color-dropdown-menu" class="dropdown-menu dropdown-menu-right" role="menu">
+                    <li ng-repeat="s in {{c.foreign_key.name|lower}}s" class="input-lg">{%- raw -%}{{s}}{%- endraw -%}</li>
+                </ul>
+            </div>
+        </div>
+        {% endif -%}
+        {%- for prop in c.properties %}
+        {%- if not prop.list %}
+         <div class="form-group">
+            <label class="control-label col-sm-2">{{prop.name|upper}}:</label>
+            <div class="col-sm-5">
+                <input id="{{c.name|lower}}_{{prop.name}}" name="{{c.name|lower}}_{{prop.name}}" type="text" ng-model="new{{c.name}}.{{prop.name}}" class="form-control" placeholder="{{c.name}}'s {{prop.name}}"/><br/>
+            </div>
+        </div>
+        {% endif -%}
+        {% endfor -%}
+
+        <div class="col-sm-offset-2 col-sm-10">
+            <input type="submit" value="Dodaj" class="btn btn-default" ng-style="btn_visibility_add" ng-click="add{{c.name}}()"/>
+            <input name = "edit_btn" type="submit" value="Update" class="btn btn-default" ng-style="btn_visibility_edit" ng-click="update{{c.name}}(newSupermarket.id, newSupermarket.naziv, newSupermarket.adresa, newSupermarket.radno_vreme, newSupermarket.logo)"/>
+            <input name = "search_btn" type="submit" value="Search" class="btn btn-default" ng-style="btn_visibility_search" ng-click="search{{c.name}}(newSupermarket.id,
+            {%- for prop in c.properties -%}
+            new{{c.name}}.{{prop.name}}
+            {%- if loop.index != c.properties|length -%}{{","}}{%- endif -%}
+            {%-endfor-%})"/>
+        </div>
+    </form>
+</div>
