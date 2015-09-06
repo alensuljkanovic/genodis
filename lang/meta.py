@@ -71,6 +71,11 @@ class Property(object):
     def __str__(self):
         return self.name
 
+    @property
+    def args_dict(self):
+        args = {arg.name: arg for arg in self.arguments}
+        return args
+
 
 class PropertyArgument(object):
     """

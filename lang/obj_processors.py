@@ -21,7 +21,7 @@ def property_processor(property):
 
     def _validate(prop):
         validator = None
-        if prop.type == "string":
+        if prop.type == "string" or prop.type == "combo":
             validator = TextValidator(prop)
         elif prop.type == "decimal":
             validator = DecimalValidator(prop)
@@ -42,8 +42,25 @@ def property_processor(property):
         "float": "FloatField",
         "decimal": "DecimalField",
         "date": "DateField",
-        "datetime": "DateTimeField"
+        "datetime": "DateTimeField",
+        "combo": "CharField"
     }
+
+    if property.type == "combo":
+        choices = property.args_dict["choices"]
+        choices_data = choices.value.split(",")
+        # value for 'choices' argumet is string, so create list of tupples
+        new_value = []
+        for data in choices_data:
+            short_name, long_name = data.split(":")
+            new_value.append((short_name, long_name))
+
+        choices.value = tuple(new_value)
+        # Dynamically add max length if it's not declared
+        if "max_length" not in property.args_dict:
+            from lang.meta import PropertyArgument
+            arg = PropertyArgument(property, "max_length", len(new_value))
+            property.arguments.insert(0, arg)
 
     if property.type in django_mappings:
         property.django_field = django_mappings[property.type]

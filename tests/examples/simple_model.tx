@@ -1,10 +1,11 @@
 model Supermarket {
 
     class Supermarket{
-        name : string(max_length=15)
+        name : string(unique, max_length=15)
         employees : Employee list
         products : Product list
         buyers : Buyer list
+        location : combo(choices="NS: Novi Sad, BG: Belgrade")
     }
 
     class Employee{

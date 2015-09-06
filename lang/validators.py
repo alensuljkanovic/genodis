@@ -53,6 +53,10 @@ class BaseValidator(object):
                         valid = True
                     except:
                         raise InvalidDefaultArgValue(arg, self.prop)
+                elif arg.name == "choices":
+                    # FIXME check if value is in correct format!
+                    if arg.value:
+                        valid = True
                 else:
                     if arg.value in valid_data:
                         valid = True
@@ -78,6 +82,7 @@ class TextValidator(BaseValidator):
     @property
     def allowed_arguments(self):
         self._allowed_args["max_length"] = "int"
+        self._allowed_args["choices"] = ""
         return self._allowed_args
 
 
