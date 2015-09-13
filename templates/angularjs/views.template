@@ -7,6 +7,9 @@
         <button class="btn btn-default" type="button" ng-click="set_state(0)"><span class="glyphicon glyphicon-plus"></span></button>
         <button class="btn btn-default" type="button" ng-click="set_state(1)"><span class="glyphicon glyphicon-pencil"></span></button>
         <button class="btn btn-default" type="button" ng-click="set_state(2)"><span class="glyphicon glyphicon-search" ></span></button>
+        {%- for action in c.actions %}
+        <button class="btn btn-default" type="button" onclick="alert('not implemented')">{{action.name}}</button>
+        {% endfor -%}
       </span>
       <span class="input-group-btn">
       </span>
