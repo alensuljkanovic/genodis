@@ -40,7 +40,7 @@
                 {% endfor -%}
             };
 
-            $http.post("http://127.0.0.1:8000/{{c.name|lower}}s/", newObj).
+            dataFactory.add{{c.name}}(newObj).
                 then(function(response){
                     // Success
                     //newObj.id = next_id;
@@ -51,8 +51,7 @@
         };
 
         $scope.delete{{c.name}} = function({{c.name|lower}}){
-            var url = "http://127.0.0.1:8000/{{c.name|lower}}s/" + {{c.name|lower}}.id  + "/";
-            $http.delete(url)
+            dataFactory.delete{{c.name}}({{c.name|lower}})
                 .then(function(response){
                     var index = $scope.{{c.name|lower}}s.indexOf({{c.name|lower}});
                     $scope.{{c.name|lower}}s.splice(index, 1);
@@ -68,7 +67,6 @@
         {%- endfor -%}
         ){
             var index;
-            var url = "http://127.0.0.1:8000/{{c.name|lower}}s/" + id  + "/";
             for(index in $scope.{{c.name|lower}}s) {
                 var s = $scope.{{c.name|lower}}s[index];
                 if (s.id == id) {
@@ -80,7 +78,7 @@
                         {%- endfor %}
                     };
 
-                    $http.put(url, obj)
+                    dataFactory.update{{c.name}}(obj)
                         .then(function(response){
                             var s = $scope.{{c.name|lower}}s[index];
                             {%- for prop in c.properties %}

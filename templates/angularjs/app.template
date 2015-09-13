@@ -10,6 +10,18 @@ main_module.factory('dataFactory', ["$http", "$q", function($http, $q){
     dataFactory.get{{c.name}}s = function(){
         return $http.get("http://127.0.0.1:8000/{{c.name|lower}}s/").then(function(response) { return response.data; });
     };
+
+    dataFactory.add{{c.name}} = function({{c.name|lower}}){
+        return $http.post("http://127.0.0.1:8000/{{c.name|lower}}s/", {{c.name|lower}});
+    };
+
+    dataFactory.update{{c.name}} = function(supermarket){
+        return $http.put("http://127.0.0.1:8000/{{c.name|lower}}s/", {{c.name|lower}});
+    };
+
+    dataFactory.delete{{c.name}} = function(supermarket){
+        return $http.delete("http://127.0.0.1:8000/{{c.name|lower}}s/" + {{c.name|lower}}.id  + "/");
+    };
     {% endfor %}
 
     return dataFactory;
