@@ -20,6 +20,7 @@ Class:
     '}'
 ;
 
+// TODO: Add label.
 Property:
     name=ID ':' type=[PropertyType] (list="list")? ('(' arguments*=PropertyArgument[','] ')')?
 ;
@@ -36,6 +37,7 @@ Action:
     '#' name=ID '(' expression=ActionExpression ')'
 ;
 
+// FIXME: Rules below should be reimplemented.
 ActionExpression:
     first_operand=First operator=ActionOperator second_operand=Expression
 ;
@@ -77,6 +79,8 @@ ExpressionOperator:
      "+=" | "-=" | "*=" | "/="| "*" | "/" | "+" | "-"
 ;
 
+// TODO: See if I really need binding as a special rule. In the end, it's just
+// a special type of Action.
 Binding:
     '#bind' '(' parameters*=BindingParameters[','] ')' '{'
         code=BindingCode
