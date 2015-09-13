@@ -36,7 +36,7 @@
         <tr ng-repeat="s in {{c.name|lower}}s" ng-click="row_clicked(s)">
             <td><a rel="stylesheet" href="details(s.id)">{%- raw -%}{{s.id}}{%- endraw -%}</a></td>
             {%- if c.foreign_key %}
-            <td>{{c.foreign_key.name}}</td>
+            <td>{%- raw -%}{{{%- endraw -%}s.{{c.foreign_key.name|lower}}{%- raw -%}}}{%- endraw -%}</td>
             {%- endif -%}
             {%- for prop in c.properties %}
             {%- if not prop.list %}
@@ -52,10 +52,7 @@
         <div class="form-group">
             <label class="control-label col-sm-2">{{c.foreign_key.name|upper}}:</label>
             <div class="col-sm-5">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
-                <ul id="color-dropdown-menu" class="dropdown-menu dropdown-menu-right" role="menu">
-                    <li ng-repeat="s in {{c.foreign_key.name|lower}}s" class="input-lg">{%- raw -%}{{s}}{%- endraw -%}</li>
-                </ul>
+                <select class="form-control" ng-options="s.name for s in {{c.foreign_key.name|lower}}s" ng-model="new{{c.name}}.{{c.foreign_key.name|lower}}"></select>
             </div>
         </div>
         {% endif -%}

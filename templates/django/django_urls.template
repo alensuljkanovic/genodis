@@ -31,9 +31,21 @@ from {{model.name|lower}}_app.models import
 # Serializers define the API representation.
 #
 {% for c in model.classes %}
-class {{c.name}}Serializer(serializers.HyperlinkedModelSerializer):
+class {{c.name}}Serializer(serializers.ModelSerializer):
     class Meta:
         model = {{c.name}}
+        fields = (
+        {%- if c.foreign_key -%}
+        '{{c.foreign_key.name|lower}}',
+        {%- endif -%}
+        'id',
+        {%- for p in c.properties -%}
+        {%- if not p.list -%}
+        '{{p.name}}'
+        {%- if loop.index != c.properties|length -%}{{","}}{%- endif -%}
+         {%- endif -%}
+        {%- endfor -%}
+        )
 
 {% endfor -%}
 

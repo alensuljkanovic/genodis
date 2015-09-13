@@ -2,33 +2,25 @@
     'use strict';
     var main_module = angular.module("myApp");
 
-    main_module.controller("{{c.name}}Controller", function($scope, $http){
+    main_module.controller("{{c.name}}Controller", ["$scope", "$http", "dataFactory", function($scope, $http, dataFactory){
+
         $scope.{{c.name|lower}}s = [];
+        dataFactory.get{{c.name}}s().then(function(data){
+                $scope.{{c.name|lower}}s = data;
+            }, function(error){
+                alert(JSON.stringify(error));
+            }
+        );
 
-        // URL is set to localhost
-        $http.get("http://127.0.0.1:8000/{{c.name|lower}}s/").
-              then(function(response) {
-                // this callback will be called asynchronously
-                // when the response is available
-                for(var i =0; i < response.data.length; i++){
-                    var s = response.data[i];
-
-                    // get rid of the last '/' in url.
-                    // for example http://127.0.0.1:8000/supermarkets/2/ will
-                    // become: http://127.0.0.1:8000/supermarkets/2
-                    var urlPart = s.url.substring(0,  s.url.length-1);
-                    // get the index of last '/' in url (one before the start of
-                    // the id)
-                    var index = urlPart.lastIndexOf("/") + 1;
-                    // substring the id
-                    s.id = urlPart.substr(index, urlPart.length);
-                    $scope.{{c.name|lower}}s.push(s);
-                }
-              }, function(response) {
-                // called asynchronously if an error occurs
-                // or server returns response with an error status.
-                alert("Error!" + JSON.stringify(response));
-              });
+        {%- if c.foreign_key %}
+        $scope.{{c.foreign_key.name|lower}}s = [];
+        dataFactory.get{{c.foreign_key.name}}s().then(function(data){
+                $scope.{{c.foreign_key.name|lower}}s = data;
+            }, function(error){
+                alert(JSON.stringify(error));
+            }
+        );
+        {% endif %}
 
         // Available states are:
         // 0 or "add" state,
@@ -39,6 +31,9 @@
         $scope.add{{c.name}} = function(){
 
             var newObj = {
+                {%- if c.foreign_key %}
+                {{c.foreign_key.name|lower}}: $scope.new{{c.name}}.{{c.foreign_key.name|lower}}.id,
+                {% endif %}
                 {%- for prop in c.properties %}
                 {{prop.name}}: $scope.new{{c.name}}.{{prop.name}}
                 {%- if loop.index != c.properties|length -%}{{","}}{%- endif -%}
@@ -114,7 +109,7 @@
                 }
             }
             alert(results);
-            $scope.supermarketi = results;
+            $scope.{{c.name|lower}}s = results;
         };
 
         $scope.row_clicked = function({{c.name|lower}}){
@@ -142,6 +137,6 @@
         };
         // Init state is "add"
         $scope.set_state(0)
-        });
+        }]);
 
 }());

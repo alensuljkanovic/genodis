@@ -2,6 +2,19 @@
 
 var main_module = angular.module("myApp", ["ngRoute"]);
 
+main_module.factory('dataFactory', ["$http", "$q", function($http, $q){
+
+    var dataFactory = {};
+
+    {%- for c in model.classes %}
+    dataFactory.get{{c.name}}s = function(){
+        return $http.get("http://127.0.0.1:8000/{{c.name|lower}}s/").then(function(response) { return response.data; });
+    };
+    {% endfor %}
+
+    return dataFactory;
+}]);
+
 main_module.config(function($routeProvider){
     $routeProvider
         {%- for c in model.classes %}
