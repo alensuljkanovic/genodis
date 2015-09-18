@@ -1,6 +1,6 @@
 import os
 from textx.metamodel import metamodel_from_file
-from lang.obj_processors import model_processor, class_processor, \
+from genodis.lang.obj_processors import model_processor, class_processor, \
     property_processor, action_processor, property_argument_processor
 
 __author__ = 'Alen Suljkanovic'

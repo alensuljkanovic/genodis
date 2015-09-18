@@ -1,9 +1,7 @@
 import os
 import jinja2
-from jinja2.environment import Environment
-from lang.meta import get_model_meta
-from src.consts import TEMPLATES_PATH, DJANGO_TEMPLATES, SRC_GEN_PATH, \
-    DJANGO_DESTINATION
+from genodis.lang.meta import get_model_meta
+from genodis.consts import TEMPLATES_PATH, SRC_GEN_PATH
 
 __author__ = 'Alen Suljkanovic'
 
@@ -27,7 +25,7 @@ class BaseGenerator(object):
 
     @staticmethod
     def setup_env():
-        root_path = os.path.dirname(__file__).replace("src", "")
+        root_path = os.path.dirname(__file__).replace("genodis", "")
         templates_path = os.path.join(root_path, TEMPLATES_PATH)
 
         file_loader = jinja2.FileSystemLoader(templates_path)
@@ -50,7 +48,7 @@ class DjangoServerGenerator(BaseGenerator):
         super(DjangoServerGenerator, self).__init__(model)
 
     def generate(self):
-        root_path = os.path.dirname(__file__).replace("src", "")
+        root_path = os.path.dirname(__file__).replace("genodis", "")
         jinja_env = self.setup_env()
 
         d = {"model": self.model, "app_name": self.model.name.lower()}
@@ -210,7 +208,7 @@ class AngularJSGenerator(BaseGenerator):
 if __name__ == "__main__":
     metamodel = get_model_meta()
 
-    path = os.path.dirname(__file__).replace("src", "")
+    path = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
     model_file = os.path.join(path, "tests", "examples", "simple_model.tx")
     model = metamodel.model_from_file(model_file)
 

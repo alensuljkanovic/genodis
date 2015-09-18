@@ -1,8 +1,8 @@
 import os
-from textx.metamodel import metamodel_from_file
-from lang.meta import get_model_meta
+from genodis.lang.meta import get_model_meta
 
 __author__ = 'Alen Suljkanovic'
+
 
 def test_simple_model():
 
