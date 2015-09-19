@@ -104,7 +104,13 @@ class PropertyArgument(object):
         self._value = None
 
     def __str__(self):
-        return "%s=%s" % (self.name, self.value)
+        if self.required:
+            return "blank=%s" % self.value
+        elif not self.choices:
+            return "%s=%s" % (self.name, self.value)
+        else:
+            ret = tuple((data.key, data.name) for data in self.choices_value)
+            return "%s=%s" %(self.name, ret)
 
     @property
     def name(self):
@@ -146,6 +152,9 @@ class ChoicesValue(object):
         self.key = key
         self.name = name
 
+    def __str__(self):
+        return "(%s, %s)" % (self.key, self.name)
+
 
 class Action(object):
     """
@@ -171,8 +180,8 @@ class ActionExpression(object):
         self.second_operand = second_operand
 
 # classes to instantiate via textX
-_classes = (Model, Class, Property, PropertyArgument,
-            Action, ActionExpression)
+_classes = (Model, Class, Property, PropertyArgument, ChoicesValue, Action,
+            ActionExpression)
 
 obj_processors = {
     "Model": model_processor,
