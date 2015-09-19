@@ -71,7 +71,7 @@
         {% endfor -%}
 
         <div class="col-sm-offset-2 col-sm-10">
-            <input type="submit" value="Dodaj" class="btn btn-default" ng-style="btn_visibility_add" ng-click="add{{c.name}}()"/>
+            <input type="submit" value="Add" class="btn btn-default" ng-style="btn_visibility_add" ng-click="add{{c.name}}()"/>
             <input name = "edit_btn" type="submit" value="Update" class="btn btn-default" ng-style="btn_visibility_edit" ng-click="update{{c.name}}(newSupermarket.id, newSupermarket.naziv, newSupermarket.adresa, newSupermarket.radno_vreme, newSupermarket.logo)"/>
             <input name = "search_btn" type="submit" value="Search" class="btn btn-default" ng-style="btn_visibility_search" ng-click="search{{c.name}}(newSupermarket.id,
             {%- for prop in c.properties -%}

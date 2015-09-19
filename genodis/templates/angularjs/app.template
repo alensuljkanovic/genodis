@@ -1,46 +1,69 @@
 'use strict';
 
-var main_module = angular.module("myApp", ["ngRoute"]);
+{%- macro const_dependency(model) -%}
+"SERVER_APP_URL",
+{%- for c in model.classes-%}
+"SERVER_APP_{{c.name|upper}}_DATA"
+{%- if loop.index != model.classes|length-%}
+,
+{%- endif -%}
+{%- endfor -%}
+{%- endmacro -%}
 
-main_module.factory('dataFactory', ["$http", "$q", function($http, $q){
+{%- macro const_function(model) -%}
+SERVER_APP_URL,
+{%- for c in model.classes-%}
+SERVER_APP_{{c.name|upper}}_DATA
+{%- if loop.index != model.classes|length-%}
+,
+{%- endif -%}
+{%- endfor -%}
+{%- endmacro -%}
 
-    var dataFactory = {};
 
+
+angular.module("myApp", ["ngRoute"])
+    .constant("SERVER_APP_URL", "http://127.0.0.1:8000/")
     {%- for c in model.classes %}
-    dataFactory.get{{c.name}}s = function(){
-        return $http.get("http://127.0.0.1:8000/{{c.name|lower}}s/").then(function(response) { return response.data; });
-    };
+    .constant("SERVER_APP_{{c.name|upper}}_DATA", "{{c.name|lower}}s/")
+    {%- endfor %}
+    .factory('dataFactory', ["$http", "$q", {{const_dependency(model)}}, function($http, $q, {{const_function(model)}}){
 
-    dataFactory.add{{c.name}} = function({{c.name|lower}}){
-        return $http.post("http://127.0.0.1:8000/{{c.name|lower}}s/", {{c.name|lower}});
-    };
+        var dataFactory = {};
 
-    dataFactory.update{{c.name}} = function(supermarket){
-        return $http.put("http://127.0.0.1:8000/{{c.name|lower}}s/", {{c.name|lower}});
-    };
-
-    dataFactory.delete{{c.name}} = function(supermarket){
-        return $http.delete("http://127.0.0.1:8000/{{c.name|lower}}s/" + {{c.name|lower}}.id  + "/");
-    };
-    {% endfor %}
-
-    return dataFactory;
-}]);
-
-main_module.config(function($routeProvider){
-    $routeProvider
         {%- for c in model.classes %}
-        .when(
-            "/{{c.name|lower}}",
-            {
-                controller:"{{c.name}}Controller",
-                templateUrl: "views/{{c.name|lower}}s.html"
-            })
-        {% endfor -%}
-        .otherwise({redirectTo: "/{{model.classes[0].name|lower}}"})
-});
+        dataFactory.get{{c.name}}s = function(){
+            return $http.get(SERVER_APP_URL + SERVER_APP_{{c.name|upper}}_DATA).then(function(response) { return response.data; });
+        };
 
-main_module.controller("mainController", function($scope){
-    $scope.message = "";
-});
+        dataFactory.add{{c.name}} = function({{c.name|lower}}){
+            return $http.post(SERVER_APP_URL + SERVER_APP_{{c.name|upper}}_DATA, {{c.name|lower}});
+        };
+
+        dataFactory.update{{c.name}} = function(supermarket){
+            return $http.put(SERVER_APP_URL + SERVER_APP_{{c.name|upper}}_DATA, {{c.name|lower}});
+        };
+
+        dataFactory.delete{{c.name}} = function(supermarket){
+            return $http.delete(SERVER_APP_URL + SERVER_APP_{{c.name|upper}}_DATA + {{c.name|lower}}.id  + "/");
+        };
+        {% endfor %}
+
+        return dataFactory;
+    }])
+    .config(function($routeProvider){
+        $routeProvider
+            {%- for c in model.classes %}
+            .when(
+                "/{{c.name|lower}}",
+                {
+                    controller:"{{c.name}}Controller",
+                    templateUrl: "views/{{c.name|lower}}s.html"
+                })
+            {% endfor -%}
+            .otherwise({redirectTo: "/{{model.classes[0].name|lower}}"})
+    })
+    .controller("mainController", function($scope){
+        $scope.message = "";
+    });
 
