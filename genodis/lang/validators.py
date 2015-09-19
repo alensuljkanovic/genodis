@@ -12,11 +12,15 @@ class BaseValidator(object):
         super(BaseValidator, self).__init__()
         self.prop = prop
 
+        # Dictionary where name of the allowed args are keys, and
+        # the values are tupples of allowed values.
         self._allowed_args = {
             "blank": ("", True, False),
             "default": [None],
             "editable": ("", True, False),
-            "unique": ("", True, False)
+            "unique": ("", True, False),
+            "readonly": ("", True, False),
+            "required": ("", True, False)
         }
 
         self.numbers = ["int", "float", "decimal"]

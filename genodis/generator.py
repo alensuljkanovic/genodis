@@ -212,7 +212,7 @@ if __name__ == "__main__":
     metamodel = get_model_meta()
 
     path = get_root_path()
-    model_file = os.path.join(path, "tests", "examples", "simple_model.tx")
+    model_file = os.path.join(path, "tests", "examples", "simple_model.gm")
     model = metamodel.model_from_file(model_file)
 
     server_generator = DjangoServerGenerator(model)

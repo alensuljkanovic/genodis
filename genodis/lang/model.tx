@@ -26,11 +26,19 @@ Property:
 ;
 
 PropertyType:
-    "string" | "text" | "int" | "float" | "decimal"| "datetime" | "date" | "combo" | Class
+    "string" | "text" | "int" | "float" | "decimal"| "datetime" | "date" | "choice" | Class
 ;
 
 PropertyArgument:
-    name=ID ('=' value=BASETYPE)?
+    (unique?="unique" ("=" unique_value=BOOL)?) |
+    (readonly?="readonly" ("=" readonly_value=BOOL)?) |
+    (required?="required" ("=" required_value=BOOL)?) |
+    (min_length?="min_length" "=" min_length_value=NUMBER) |
+    (max_length?="max_length" "=" max_length_value=NUMBER) |
+    (choices?="choices" "=" choices_value+=ChoicesValue[','])
+;
+ChoicesValue:
+    key=ID ":" name=STRING
 ;
 
 Action:
@@ -93,4 +101,9 @@ BindingParameters:
 
 BindingCode:
     /^(.|\n)*?(?=})/
+;
+
+// Special rule for comments
+Comment:
+  /\/\/.*$/|/\/\*(.|\n)*?\*\//  // Non-greedy match of block component content
 ;

@@ -1,5 +1,6 @@
 import os
 from genodis.lang.meta import get_model_meta
+from genodis.utils import get_root_path
 
 __author__ = 'Alen Suljkanovic'
 
@@ -8,8 +9,10 @@ def test_simple_model():
 
     metamodel = get_model_meta()
 
-    model_file = os.path.join("tests", "examples", "simple_model.tx")
+    model_file = os.path.join(get_root_path(),
+                              "tests", "examples", "simple_model.gm")
 
+    print("MODEL PATH %s" % model_file)
     model = metamodel.model_from_file(model_file)
 
     # assert model.name == "Supermarket"

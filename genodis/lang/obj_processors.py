@@ -3,11 +3,14 @@ from genodis.lang.validators import TextValidator, DecimalValidator, BaseValidat
 __author__ = 'Alen Suljkanovic'
 
 
+def choices_value_processor(choice_value):
+    pass
+
 def action_processor(action):
     """
     Action processor
     """
-    print(str(action.expression.second_operand.first_operand.name))
+    pass
 
 
 def property_processor(property):
@@ -21,7 +24,7 @@ def property_processor(property):
 
     def _validate(prop):
         validator = None
-        if prop.type == "string" or prop.type == "combo":
+        if prop.type == "string" or prop.type == "choice":
             validator = TextValidator(prop)
         elif prop.type == "decimal":
             validator = DecimalValidator(prop)
@@ -43,23 +46,22 @@ def property_processor(property):
         "decimal": "DecimalField",
         "date": "DateField",
         "datetime": "DateTimeField",
-        "combo": "CharField"
+        "choice": "CharField"
     }
 
-    if property.type == "combo":
+    if property.type == "choice":
         choices = property.args_dict["choices"]
-        choices_data = choices.value.split(",")
         # value for 'choices' argumet is string, so create list of tupples
         new_value = []
-        for data in choices_data:
-            short_name, long_name = data.split(":")
-            new_value.append((short_name, long_name))
+        for data in choices.value:
+            new_value.append((data.key, data.name))
 
-        choices.value = tuple(new_value)
+        # choices.value = tuple(new_value)
         # Dynamically add max length if it's not declared
         if "max_length" not in property.args_dict:
-            from lang.meta import PropertyArgument
-            arg = PropertyArgument(property, "max_length", len(new_value))
+            from genodis.lang.meta import PropertyArgument
+            arg = PropertyArgument(property, max_length=True,
+                                   max_length_value=len(new_value))
             property.arguments.insert(0, arg)
 
     if property.type in django_mappings:
@@ -70,16 +72,20 @@ def property_argument_processor(prop_argument):
     """
     Property argument processor.
     """
-    if prop_argument.name == "unique":
-        if not prop_argument.value:
-            prop_argument.value = True
+    # If these property arguments are set in model, but their values are not
+    # set, these values will have default value
+    if prop_argument.unique and not prop_argument.unique_value:
+        prop_argument.unique_value = True
+    elif prop_argument.readonly and not prop_argument.readonly_value:
+        prop_argument.readonly_value = True
+    elif prop_argument.required and not prop_argument.required:
+        prop_argument.required_value = True
 
 
 def class_processor(_class):
     """
     Class processor
     """
-    # print(_class)
     pass
 
 

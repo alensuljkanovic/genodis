@@ -1,7 +1,8 @@
 import os
 from textx.metamodel import metamodel_from_file
 from genodis.lang.obj_processors import model_processor, class_processor, \
-    property_processor, action_processor, property_argument_processor
+    property_processor, action_processor, property_argument_processor, \
+    choices_value_processor
 
 __author__ = 'Alen Suljkanovic'
 
@@ -81,13 +82,69 @@ class PropertyArgument(object):
     """
     Python representation of property argument defined in grammar.
     """
-    def __init__(self, parent, name, value):
+    def __init__(self, parent, unique=None, unique_value=None,
+                 readonly=None, readonly_value=None,
+                 required=None, required_value=None,
+                 min_length=None, min_length_value=None,
+                 max_length=None, max_length_value=None,
+                 choices=None, choices_value=None):
         self.parent = parent
-        self.name = name
-        self.value = value
+        self.unique = unique
+        self.unique_value = unique_value
+        self.readonly = readonly
+        self.readonly_value = readonly_value
+        self.required = required
+        self.required_value = required_value
+        self.min_length = min_length
+        self.min_length_value = min_length_value
+        self.max_length = max_length
+        self.max_length_value = max_length_value
+        self.choices = choices
+        self.choices_value = choices_value
+        self._value = None
 
     def __str__(self):
         return "%s=%s" % (self.name, self.value)
+
+    @property
+    def name(self):
+        if self.unique:
+            return "unique"
+        elif self.readonly:
+            return "readonly"
+        elif self.required:
+            return "required"
+        elif self.min_length:
+            return "min_length"
+        elif self.max_length:
+            return "max_length"
+        elif self.choices:
+            return "choices"
+
+    @property
+    def value(self):
+        if self.unique:
+            return self.unique_value
+        elif self.readonly:
+            return self.readonly_value
+        elif self.required:
+            return self.required_value
+        elif self.min_length:
+            return self.min_length_value
+        elif self.max_length:
+            return self.max_length_value
+        elif self.choices:
+            return self.choices_value
+
+
+class ChoicesValue(object):
+    """
+    Python representation of choices value defined in grammar.
+    """
+    def __init__(self, parent, key, name):
+        self.parent = parent
+        self.key = key
+        self.name = name
 
 
 class Action(object):
@@ -114,7 +171,8 @@ class ActionExpression(object):
         self.second_operand = second_operand
 
 # classes to instantiate via textX
-_classes = (Model, Class, Property, PropertyArgument, Action, ActionExpression)
+_classes = (Model, Class, Property, PropertyArgument,
+            Action, ActionExpression)
 
 obj_processors = {
     "Model": model_processor,
