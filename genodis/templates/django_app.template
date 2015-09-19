@@ -1,3 +1,0 @@
-{% include "django/django_settings.template"%}
-{% include "django/django_urls.template"%}
-{% include "django/django_wsgi.template"%}
