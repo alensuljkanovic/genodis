@@ -11,10 +11,10 @@ NAME = 'genodis'
 DESC = 'Language for web app development'
 VERSION = __version__
 AUTHOR = 'Alen'
-AUTHOR_EMAIL = 'igor DOT dejanovic AT gmail DOT com'
+AUTHOR_EMAIL = 'alienized91 AT gmail DOT com'
 LICENSE = 'MIT'
-URL = 'https://github.com/igordejanovic/textX'
-DOWNLOAD_URL = 'https://github.com/igordejanovic/textX/archive/v%s.tar.gz' % VERSION
+URL = 'https://github.com/alensuljkanovic/genodis'
+DOWNLOAD_URL = 'https://github.com/alensuljkanovic/genodis/archive/v%s.tar.gz' % VERSION
 #README = codecs.open(os.path.join(os.path.dirname(__file__), 'README.rst'),
 #                     'r', encoding='utf-8').read()
 README = "Citaj me"
@@ -32,8 +32,9 @@ setup(
     url = URL,
     download_url = DOWNLOAD_URL,
     packages = ["genodis"],
-    install_requires = ["textx", "jinja2"],
-    keywords = "parser meta-language meta-model language DSL",
+    install_requires = ["textx", "jinja2", "djangorestframework",
+                        "django-cors-headers"],
+    keywords = "web django angularjs meta-language meta-model language DSL",
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
