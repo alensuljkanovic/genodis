@@ -1,4 +1,4 @@
-from lang.exceptions import InvalidPropertyArgValue, InvalidPropertyArgument, \
+from genodis.lang.exceptions import InvalidPropertyArgValue, InvalidPropertyArgument, \
     InvalidDefaultArgValue, DecimalArgsException
 
 __author__ = 'Alen Suljkanovic'

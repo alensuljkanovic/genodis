@@ -1,4 +1,4 @@
-from lang.validators import TextValidator, DecimalValidator, BaseValidator
+from genodis.lang.validators import TextValidator, DecimalValidator, BaseValidator
 
 __author__ = 'Alen Suljkanovic'
 
