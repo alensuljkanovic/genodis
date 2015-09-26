@@ -1,33 +1,13 @@
 'use strict';
 
-{%- macro const_dependency(model) -%}
-"SERVER_APP_URL",
-{%- for c in model.classes-%}
-"SERVER_APP_{{c.name|upper}}_DATA"
-{%- if loop.index != model.classes|length-%}
-,
-{%- endif -%}
-{%- endfor -%}
-{%- endmacro -%}
-
-{%- macro const_function(model) -%}
-SERVER_APP_URL,
-{%- for c in model.classes-%}
-SERVER_APP_{{c.name|upper}}_DATA
-{%- if loop.index != model.classes|length-%}
-,
-{%- endif -%}
-{%- endfor -%}
-{%- endmacro -%}
-
-
+{% import "utils.macros" as utils %}
 
 angular.module("myApp", ["ngRoute"])
     .constant("SERVER_APP_URL", "http://127.0.0.1:8000/")
     {%- for c in model.classes %}
     .constant("SERVER_APP_{{c.name|upper}}_DATA", "{{c.name|lower}}s/")
     {%- endfor %}
-    .factory('dataFactory', ["$http", "$q", {{const_dependency(model)}}, function($http, $q, {{const_function(model)}}){
+    .factory('dataFactory', ["$http", "$q", {{utils.const_dependency(model)}}, function($http, $q, {{utils.const_function(model)}}){
 
         var dataFactory = {};
 

@@ -1,0 +1,45 @@
+{# Creates an  array of JSON values:
+   For example:
+   [{key:"Key1", name:"Some Name1"}, {key:"Key2", name:"Some Name2"}
+
+   This is used for populating ngOptions.
+#}
+{%- macro list_choices(property) -%}
+[
+{%- for data in property.args_dict["choices"].choices_value -%}
+{key:'{{data.key}}', name:'{{data.name}}' }
+{%- if loop.index != property.arguments|length -%}
+,
+{%- endif -%}
+{%- endfor -%}
+]
+{%- endmacro -%}
+
+
+{#
+    This macro injects URL constanst as dependencies in factory created
+    by angular module.
+#}
+{%- macro const_dependency(model) -%}
+"SERVER_APP_URL",
+{%- for c in model.classes-%}
+"SERVER_APP_{{c.name|upper}}_DATA"
+{%- if loop.index != model.classes|length-%}
+,
+{%- endif -%}
+{%- endfor -%}
+{%- endmacro -%}
+
+
+{#
+    This macro injects URL constanst as parameters of factory's function.
+#}
+{%- macro const_function(model) -%}
+SERVER_APP_URL,
+{%- for c in model.classes-%}
+SERVER_APP_{{c.name|upper}}_DATA
+{%- if loop.index != model.classes|length-%}
+,
+{%- endif -%}
+{%- endfor -%}
+{%- endmacro -%}

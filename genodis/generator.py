@@ -136,14 +136,27 @@ class DjangoServerGenerator(BaseGenerator):
                                           self.model.name.lower())
             os.mkdir(view_templates)
 
+            # creating folder for static files
+            static_files = os.path.join(django_app, "static")
+            os.mkdir(static_files)
+
 
 class AngularJSGenerator(BaseGenerator):
     """
     Generates AngularJS client app.
     """
-    def __init__(self, model):
+    def __init__(self, model, generate_as_static=False):
+        """
+        Initialize AngujarJS generator
+        :param model: model written by Genodis DSL
+        :param generate_as_static: Indicates wether AngularJS client will be
+                                   generated as standalone app, or within
+                                   Django server app as part of static files.
+        :return:
+        """
         super(AngularJSGenerator, self).__init__(model)
         self.templates_folder_name = "angularjs"
+        self.generate_as_static = generate_as_static
 
     def generate(self):
         root_path = get_root_path()
@@ -153,16 +166,20 @@ class AngularJSGenerator(BaseGenerator):
 
         destination = os.path.join(root_path, SRC_GEN_PATH)
 
-        if not os.path.exists(destination):
-            os.mkdir(destination)
+        if not self.generate_as_static:
+            if not os.path.exists(destination):
+                os.mkdir(destination)
 
-        angular_app_name = self.model.name.lower() + "_js"
-        angular_path = os.path.join(destination, angular_app_name)
-        os.mkdir(angular_path)
+            angular_app_name = self.model.name.lower() + "_js"
+            angular_path = os.path.join(destination, angular_app_name)
+            os.mkdir(angular_path)
 
-        # create app folder
-        angular_app = os.path.join(angular_path, "app")
-        os.mkdir(angular_app)
+            # create app folder
+            angular_app = os.path.join(angular_path, "app")
+            os.mkdir(angular_app)
+        else:
+            angular_app = os.path.join(destination, model.name.lower(),
+                                       model.name.lower() + "_app", "static")
 
 
         #
@@ -218,5 +235,5 @@ if __name__ == "__main__":
     server_generator = DjangoServerGenerator(model)
     server_generator.generate()
 
-    angular_generator = AngularJSGenerator(model)
+    angular_generator = AngularJSGenerator(model, generate_as_static=True)
     angular_generator.generate()
