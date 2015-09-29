@@ -1,13 +1,15 @@
-from genodis.lang.exceptions import InvalidPropertyArgValue, InvalidPropertyArgument, \
-    InvalidDefaultArgValue, DecimalArgsException
+from .exceptions import InvalidPropertyArgValue, \
+    InvalidPropertyArgument, InvalidDefaultArgValue, DecimalArgsException
 
 __author__ = 'Alen Suljkanovic'
 
 
 class BaseValidator(object):
+
     """
     Base class for all validators.
     """
+
     def __init__(self, prop):
         super(BaseValidator, self).__init__()
         self.prop = prop
@@ -31,6 +33,10 @@ class BaseValidator(object):
         """
         for arg in self.prop.arguments:
             if arg.name in self.allowed_arguments:
+
+                if arg.name == "calc":
+                    continue
+
                 valid_data = self.allowed_arguments[arg.name]
                 valid = False
 
@@ -115,3 +121,35 @@ class DecimalValidator(BaseValidator):
         if max_digits_exits and not dec_places_exits:
             raise DecimalArgsException()
 
+
+class CalculatedFieldValidator(BaseValidator):
+
+    """
+    Validator for the calculated field
+    """
+
+    def __init__(self, prop):
+        super(CalculatedFieldValidator, self).__init__(prop)
+
+    @property
+    def allowed_arguments(self):
+        self._allowed_args.clear()
+        self._allowed_args["max_digits"] = "int"
+        self._allowed_args["decimal_places"] = "int"
+        self._allowed_args["unique"] = ("", True, False)
+        self._allowed_args["calc"] = ""  # calc can contain anything
+        return self._allowed_args
+
+    def validate(self):
+        super(CalculatedFieldValidator, self).validate()
+
+        max_digits_exits = False
+        dec_places_exits = False
+        for arg in self.prop.arguments:
+            if arg.name == "max_digits":
+                max_digits_exits = True
+            elif arg.name == "decimal_places":
+                dec_places_exits = True
+
+        if max_digits_exits and not dec_places_exits:
+            raise DecimalArgsException(_type="calculated_field")

@@ -1,13 +1,13 @@
 import os
 from textx.metamodel import metamodel_from_file
-from genodis.lang.obj_processors import model_processor, class_processor, \
-    property_processor, action_processor, property_argument_processor, \
-    choices_value_processor
+from .obj_processors import model_processor, class_processor, \
+    property_processor, action_processor, property_argument_processor
 
 __author__ = 'Alen Suljkanovic'
 
 
 class Model(object):
+
     """
     Python representation of model defined in grammar.
     """
@@ -16,6 +16,8 @@ class Model(object):
         """
         Initialization of model
         """
+        super(Model, self).__init__()
+
         self.name = name
         self.classes = classes
         self.actions = actions if actions else []
@@ -28,6 +30,7 @@ class Model(object):
 
 
 class Class(object):
+
     """
     Python representation of entity defined in grammar.
     """
@@ -37,6 +40,8 @@ class Class(object):
         """
         Initialization of entity.
         """
+        super(Class, self).__init__()
+
         self.parent = parent
         self.name = name
         self.properties = properties
@@ -56,13 +61,17 @@ class Class(object):
 
 
 class Property(object):
+
     """
     Python representation of property defined in grammar.
     """
+
     def __init__(self, parent, name, type, list=None, arguments=None):
         """
         Initialization of property.
         """
+        super(Property, self).__init__()
+
         self.parent = parent
         self.name = name
         self.type = type
@@ -79,15 +88,25 @@ class Property(object):
 
 
 class PropertyArgument(object):
+
     """
     Python representation of property argument defined in grammar.
     """
+
     def __init__(self, parent, unique=None, unique_value=None,
                  readonly=None, readonly_value=None,
                  required=None, required_value=None,
                  min_length=None, min_length_value=None,
                  max_length=None, max_length_value=None,
-                 choices=None, choices_value=None):
+                 choices=None, choices_value=None,
+                 calc=None, calc_value=None,
+                 decimal_places=None, decimal_places_value=None,
+                 max_digits=None, max_digits_value=None):
+        """
+        Initialization of property argument.
+        """
+        super(PropertyArgument, self).__init__()
+
         self.parent = parent
         self.unique = unique
         self.unique_value = unique_value
@@ -101,6 +120,13 @@ class PropertyArgument(object):
         self.max_length_value = max_length_value
         self.choices = choices
         self.choices_value = choices_value
+        self.calc = calc
+        self.calc_value = calc_value
+        self.max_digits = max_digits
+        self.max_digits_value = max_digits_value
+        self.decimal_places = decimal_places
+        self.decimal_places_value = decimal_places_value
+
         self._value = None
 
     def __str__(self):
@@ -110,10 +136,13 @@ class PropertyArgument(object):
             return "%s=%s" % (self.name, self.value)
         else:
             ret = tuple((data.key, data.name) for data in self.choices_value)
-            return "%s=%s" %(self.name, ret)
+            return "%s=%s" % (self.name, ret)
 
     @property
     def name(self):
+        """
+        Returns the name of the property argument.
+        """
         if self.unique:
             return "unique"
         elif self.readonly:
@@ -126,9 +155,18 @@ class PropertyArgument(object):
             return "max_length"
         elif self.choices:
             return "choices"
+        elif self.calc:
+            return "calc"
+        elif self.max_digits:
+            return "max_digits"
+        elif self.decimal_places:
+            return "decimal_places"
 
     @property
     def value(self):
+        """
+        Returns the value of the property argument.
+        """
         if self.unique:
             return self.unique_value
         elif self.readonly:
@@ -141,13 +179,26 @@ class PropertyArgument(object):
             return self.max_length_value
         elif self.choices:
             return self.choices_value
+        elif self.calc:
+            return self.calc_value
+        elif self.max_digits:
+            return self.max_digits_value
+        elif self.decimal_places:
+            return self.decimal_places_value
 
 
 class ChoicesValue(object):
+
     """
     Python representation of choices value defined in grammar.
     """
+
     def __init__(self, parent, key, name):
+        """
+        Initialization of choices value.
+        """
+        super(ChoicesValue, self).__init__()
+
         self.parent = parent
         self.key = key
         self.name = name
@@ -156,11 +207,45 @@ class ChoicesValue(object):
         return "(%s, %s)" % (self.key, self.name)
 
 
+class CalculationValue(object):
+
+    """
+    Python representation of calculation value defined in grammar
+    """
+
+    def __init__(self, parent, first_operand, other_operands=None):
+        """
+        Initialization of calculation value
+        """
+        super(CalculationValue, self).__init__()
+        self.first_operand = first_operand
+        self.other_operands = other_operands if other_operands else []
+
+
+class CalculationOperands(object):
+
+    """
+    Python representation of calculation operand defined in grammar
+    """
+
+    def __init__(self, operator, operand):
+        """
+        Initialization of calculation operand.
+        """
+        super(CalculationOperands, self).__init__()
+        self.operator = operator
+        self.operand = operand
+
+
 class Action(object):
+
     """
     Python representation of action defined in grammar.
     """
+
     def __init__(self, parent, name, expression):
+        super(Action, self).__init__()
+
         self.parent = parent
         self.name = name
         self.expression = expression
@@ -170,9 +255,11 @@ class Action(object):
 
 
 class ActionExpression(object):
+
     """
 
     """
+
     def __init__(self, parent, first_operand, operator, second_operand):
         self.parent = parent
         self.first_operand = first_operand

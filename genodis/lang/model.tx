@@ -26,19 +26,35 @@ Property:
 ;
 
 PropertyType:
-    "string" | "text" | "int" | "float" | "decimal"| "datetime" | "date" | "choice" | Class
+    "string" | "text" | "int" | "float" | "decimal"| "datetime" | "date" | "choice" | "calculated_field" | Class
 ;
 
 PropertyArgument:
     (unique?="unique" ("=" unique_value=BOOL)?) |
     (readonly?="readonly" ("=" readonly_value=BOOL)?) |
     (required?="required" ("=" required_value=BOOL)?) |
-    (min_length?="min_length" "=" min_length_value=NUMBER) |
-    (max_length?="max_length" "=" max_length_value=NUMBER) |
-    (choices?="choices" "=" choices_value+=ChoicesValue[','])
+    (min_length?="min_length" "=" min_length_value=INT) |
+    (max_length?="max_length" "=" max_length_value=INT) |
+    (choices?="choices" "=" choices_value+=ChoicesValue[',']) |
+    (calc?="calc" "=" calc_value+=CalculationValue) |
+    (max_digits?="max_digits" "=" max_digits_value=INT) |
+    (decimal_places?="decimal_places" "=" decimal_places_value=INT)
 ;
+
 ChoicesValue:
     key=ID ":" name=STRING
+;
+
+CalculationValue:
+    first_operand=ID other_operands*=CalculationOperands
+;
+
+CalculationOperands:
+    operator=CalcOperator operand=ID
+;
+
+CalcOperator:
+    "." | "+" | "-" | "/" | "*"
 ;
 
 Action:

@@ -6,8 +6,10 @@ from django.db import models
 {%- macro create_property(prop) -%}
 {{prop.name}} = models.{{prop.django_field}}(
 {%- for arg in prop.arguments -%}
+{%- if arg.name != "calc"-%}
 {{arg}}
-{%- if loop.index != prop.arguments|length -%}{{","}}{%- endif -%}
+{%- if loop.index != prop.arguments|length -%}{{", "}}{%- endif -%}
+{%- endif -%}
 {%- endfor -%}
 )
 {%- endmacro %}
@@ -18,7 +20,7 @@ class {{c.name}}(models.Model):
     {{c.foreign_key.name|lower}} = models.ForeignKey({{c.foreign_key}})
     {%- endif -%}
     {%- for p in c.properties -%}
-        {%- if not p.list %}
+        {%- if not p.list and not p.readonly %}
     {{create_property(p)}}
         {%- endif -%}
     {%- endfor %}

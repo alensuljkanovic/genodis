@@ -1,10 +1,12 @@
-from genodis.lang.validators import TextValidator, DecimalValidator, BaseValidator
+from .validators import TextValidator, DecimalValidator,\
+    BaseValidator, CalculatedFieldValidator
 
 __author__ = 'Alen Suljkanovic'
 
 
 def choices_value_processor(choice_value):
     pass
+
 
 def action_processor(action):
     """
@@ -28,12 +30,12 @@ def property_processor(property):
             validator = TextValidator(prop)
         elif prop.type == "decimal":
             validator = DecimalValidator(prop)
+        elif prop.type == "calculated_field":
+            validator = CalculatedFieldValidator(prop)
         else:
             validator = BaseValidator(prop)
 
         validator.validate()
-
-    _validate(property)
 
     if not hasattr(property, "django_field"):
         setattr(property, "django_field", None)
@@ -46,7 +48,8 @@ def property_processor(property):
         "decimal": "DecimalField",
         "date": "DateField",
         "datetime": "DateTimeField",
-        "choice": "CharField"
+        "choice": "CharField",
+        "calculated_field": "DecimalField"
     }
 
     if property.type == "choice":
@@ -59,13 +62,23 @@ def property_processor(property):
         # choices.value = tuple(new_value)
         # Dynamically add max length if it's not declared
         if "max_length" not in property.args_dict:
-            from genodis.lang.meta import PropertyArgument
+            from .meta import PropertyArgument
             arg = PropertyArgument(property, max_length=True,
                                    max_length_value=len(new_value))
             property.arguments.insert(0, arg)
 
+    if property.type == "calculated_field":
+        # if property argument 'decimal_places' is not set for calculated_field
+        if "decimal_places" not in property.args_dict:
+            from .meta import PropertyArgument
+            arg = PropertyArgument(property, decimal_places=True,
+                                   decimal_places_value=2)
+            property.arguments.insert(0, arg)
+
     if property.type in django_mappings:
         property.django_field = django_mappings[property.type]
+
+    _validate(property)
 
 
 def property_argument_processor(prop_argument):

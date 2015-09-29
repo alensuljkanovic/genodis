@@ -32,6 +32,13 @@ from {{model.name|lower}}_app.models import
 #
 {% for c in model.classes %}
 class {{c.name}}Serializer(serializers.ModelSerializer):
+
+    {%- for p in c.properties %}
+        {%- if p.readonly or p.type == "calculated_field" %}
+    {{p.name}} = serializers.ReadOnlyField()
+        {% endif -%}
+    {% endfor %}
+
     class Meta:
         model = {{c.name}}
         fields = (
@@ -40,7 +47,7 @@ class {{c.name}}Serializer(serializers.ModelSerializer):
         {%- endif -%}
         'id',
         {%- for p in c.properties -%}
-        {%- if not p.list -%}
+        {%- if not p.list-%}
         '{{p.name}}'
         {%- if loop.index != c.properties|length -%}{{","}}{%- endif -%}
          {%- endif -%}

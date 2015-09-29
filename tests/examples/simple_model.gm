@@ -33,7 +33,7 @@ model Supermarket {
     class Cart{
         session
         products : Product list
-        total_price: float
+        total_price: calculated_field(calc=products.object.price, max_digits=10)
 
         #bind(total_price, products){
             total_price = products.size * products.object.price

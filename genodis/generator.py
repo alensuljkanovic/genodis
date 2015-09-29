@@ -1,16 +1,18 @@
 import os
 import jinja2
-from genodis.consts import TEMPLATES_PATH, SRC_GEN_PATH
-from genodis.lang.meta import get_model_meta
-from genodis.utils import get_root_path
+from consts import TEMPLATES_PATH, SRC_GEN_PATH
+from lang.meta import get_model_meta
+from utils import get_root_path
 
 __author__ = 'Alen Suljkanovic'
 
 
 class BaseGenerator(object):
+
     """
     Base generator which is inherited by all other generators.
     """
+
     def __init__(self, model):
         super(BaseGenerator, self).__init__()
         self.model = model
@@ -44,9 +46,11 @@ class BaseGenerator(object):
 
 
 class DjangoServerGenerator(BaseGenerator):
+
     """
     Generates django server.
     """
+
     def __init__(self, model):
         super(DjangoServerGenerator, self).__init__(model)
         self.templates_folder_name = "django"
@@ -142,9 +146,11 @@ class DjangoServerGenerator(BaseGenerator):
 
 
 class AngularJSGenerator(BaseGenerator):
+
     """
     Generates AngularJS client app.
     """
+
     def __init__(self, model, generate_as_static=False):
         """
         Initialize AngujarJS generator
@@ -181,7 +187,6 @@ class AngularJSGenerator(BaseGenerator):
             angular_app = os.path.join(destination, model.name.lower(),
                                        model.name.lower() + "_app", "static")
 
-
         #
         # Create app.js
         #
@@ -210,7 +215,8 @@ class AngularJSGenerator(BaseGenerator):
         for c in self.model.classes:
             ctlr_name = c.name.lower() + "_controller.js"
             data = {"c": c}
-            template.stream(data).dump(os.path.join(controllers_path, ctlr_name))
+            template.stream(data).dump(os.path.join(controllers_path,
+                                                    ctlr_name))
 
         # create views folder
         views_path = os.path.join(angular_app, "views")
