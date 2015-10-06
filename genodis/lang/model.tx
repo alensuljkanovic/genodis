@@ -1,14 +1,32 @@
 /*
-    Description of model.
+    Description of module.
 */
 
-Model:
-    'model' name=ID '{'
-        classes+=Class
-        actions*=Action
-        bindings*=Binding
-    '}'
+
+Module:
+    content*=ModuleContent
 ;
+
+ModuleContent:
+    imports+=Import | classes+=Class | actions+=Action | bindings+=Binding
+;
+
+Import:
+    module=ImportModule | selective=SelectiveImport
+;
+
+ImportModule:
+    'import' modules+=ID[',']
+;
+
+SelectiveImport:
+    'from' from_module=ID 'import' selector=ImportSelector
+;
+
+ImportSelector:
+    value='*' | value+=ID[',']
+;
+
 
 Class:
     'class' name=ID '{'

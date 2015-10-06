@@ -1,0 +1,4 @@
+
+class ClassA2{
+    a_prop : string(max_length=25)
+}

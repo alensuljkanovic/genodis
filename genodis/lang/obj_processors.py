@@ -102,16 +102,9 @@ def class_processor(_class):
     pass
 
 
-def model_processor(model):
+def module_processor(module):
     """
     Model processor
     """
     # Dictionary of all classes in model
-    all_classes = {c.name: c for c in model.classes}
-
-    for c in model.classes:
-        for p in c.properties:
-            if p.type in all_classes and not c.session:
-                if p.list:
-                    ref_class = all_classes[p.type]
-                    ref_class.foreign_key = c
+    pass

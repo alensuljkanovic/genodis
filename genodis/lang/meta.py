@@ -1,6 +1,6 @@
 import os
 from textx.metamodel import metamodel_from_file
-from .obj_processors import model_processor, class_processor, \
+from .obj_processors import module_processor, class_processor, \
     property_processor, action_processor, property_argument_processor
 
 __author__ = 'Alen Suljkanovic'
@@ -8,25 +8,75 @@ __author__ = 'Alen Suljkanovic'
 
 class Model(object):
 
+    def __init__(self, modules=None):
+        super(Model, self).__init__()
+
+        self.modules = modules if modules else []
+
+
+class Module(object):
+
     """
     Python representation of model defined in grammar.
     """
 
-    def __init__(self, name, classes, actions=None, bindings=None):
+    def __init__(self, content=None):
         """
         Initialization of model
         """
-        super(Model, self).__init__()
+        super(Module, self).__init__()
 
-        self.name = name
-        self.classes = classes
+        self.content = content if content else []
+
+
+class ModuleContent(object):
+
+    def __init__(self, parent, imports=None, classes=None, actions=None,
+                 bindings=None):
+        super(ModuleContent, self).__init__()
+        self.parent = parent
+        self.imports = imports
+        self.classes = classes if classes else []
         self.actions = actions if actions else []
         self.bindings = bindings if bindings else []
 
-    def __str__(self):
-        return "Model(%s), entities: %s, actions %s" % (self.name,
-                                                        self.classes,
-                                                        self.actions)
+
+class Import(object):
+
+    def __init__(self, parent, module=None, selective=None):
+        super(Import, self).__init__()
+        self.module = module
+        self.selective = selective
+
+
+class ImportModule(object):
+
+    """
+    Python representation of import module.
+    """
+
+    def __init__(self, parent, modules=None):
+        """
+        Initialization of import.
+        """
+        super(ImportModule, self).__init__()
+        self.parent = parent
+        self.modules = modules
+
+
+class SelectiveImport(object):
+
+    def __init__(self, parent, from_module, selector):
+        self.parent = parent
+        self.from_module = from_module
+        self.selector = selector
+
+
+class ImportSelector(object):
+
+    def __init__(self, parent, value=None):
+        self.parent = parent
+        self.value = value if value else []
 
 
 class Class(object):
@@ -267,11 +317,12 @@ class ActionExpression(object):
         self.second_operand = second_operand
 
 # classes to instantiate via textX
-_classes = (Model, Class, Property, PropertyArgument, ChoicesValue, Action,
-            ActionExpression)
+_classes = (Module, ModuleContent, ImportModule, SelectiveImport,
+            ImportSelector, Class, Property, PropertyArgument, ChoicesValue,
+            Action, ActionExpression)
 
 obj_processors = {
-    "Model": model_processor,
+    "Module": module_processor,
     "Class": class_processor,
     "Property": property_processor,
     "Action": action_processor,
@@ -289,5 +340,6 @@ def get_model_meta():
     _model_meta = metamodel_from_file(os.path.join(os.path.dirname(__file__),
                                                    "model.tx"),
                                       classes=_classes)
+
     _model_meta.register_obj_processors(obj_processors)
     return _model_meta
