@@ -2,6 +2,7 @@ import os
 from textx.metamodel import metamodel_from_file
 from .obj_processors import module_processor, class_processor, \
     property_processor, action_processor, property_argument_processor
+from genodis.consts import PROPERTY_TYPES
 
 __author__ = 'Alen Suljkanovic'
 
@@ -11,7 +12,7 @@ class Model(object):
     def __init__(self, modules=None):
         super(Model, self).__init__()
 
-        self.modules = modules if modules else []
+        self.modules = modules if modules else {}
 
 
 class Module(object):
@@ -40,13 +41,49 @@ class ModuleContent(object):
         self.actions = actions if actions else []
         self.bindings = bindings if bindings else []
 
+        # A dictionary of imported modules.
+        # Example:
+        # {
+        #   "module_one": "*",
+        #   "module_two":
+        #       {
+        #          "classes":[ClassOne, ClassTwo],
+        #          "actions": [action_one]
+        #       }
+        # }
+        self.imported_modules = {}
+
+    def __getitem__(self, class_name):
+        """
+        Returns class with given name.
+        """
+        for _class in self.classes:
+            if _class.name == class_name:
+                return _class
+
+    def __contains__(self, class_name):
+        """
+        Returns True if the class with given name exists inside the
+        module content.
+        """
+        for _class in self.classes:
+            if _class.name == class_name:
+                return True
+        return False
+
+    def __iter__(self):
+        """
+        Returns list of classes.
+        """
+        return iter(self.classes)
+
 
 class Import(object):
 
     def __init__(self, parent, module=None, selective=None):
         super(Import, self).__init__()
-        self.module = module
-        self.selective = selective
+        self.module = module  # True in case of ImportModule
+        self.selective = selective  # True in case of SelectiveImport
 
 
 class ImportModule(object):
@@ -102,12 +139,16 @@ class Class(object):
         # Dictionary that describes relationship of one class with others.
         # Key is name of referenced class and value shows how many times
         # given class has been referenced.
-        self.references = {}
+        # self.references = {}
 
         self.foreign_key = None
 
     def __str__(self):
         return self.name
+
+    @property
+    def references(self):
+        return [prop for prop in self.properties if prop.is_reference]
 
 
 class Property(object):
@@ -135,6 +176,13 @@ class Property(object):
     def args_dict(self):
         args = {arg.name: arg for arg in self.arguments}
         return args
+
+    @property
+    def is_reference(self):
+        """
+        Shows if property is reference to another class.
+        """
+        return True if self.type not in PROPERTY_TYPES else False
 
 
 class PropertyArgument(object):
@@ -317,7 +365,7 @@ class ActionExpression(object):
         self.second_operand = second_operand
 
 # classes to instantiate via textX
-_classes = (Module, ModuleContent, ImportModule, SelectiveImport,
+_classes = (Module, ModuleContent, Import, ImportModule, SelectiveImport,
             ImportSelector, Class, Property, PropertyArgument, ChoicesValue,
             Action, ActionExpression)
 
@@ -338,7 +386,7 @@ def get_model_meta():
     """
     global _model_meta
     _model_meta = metamodel_from_file(os.path.join(os.path.dirname(__file__),
-                                                   "model.tx"),
+                                                   "module.tx"),
                                       classes=_classes)
 
     _model_meta.register_obj_processors(obj_processors)

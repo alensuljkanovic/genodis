@@ -6,7 +6,7 @@ __author__ = 'Alen Suljkanovic'
 def test_simple_model():
 
     model = load_model("/home/biohazard1491/genodis/tests/examples/modules")
-    for module in model.modules:
+    for module in model.modules.values():
         print(module.name)
 
     # assert model.name == "Supermarket"

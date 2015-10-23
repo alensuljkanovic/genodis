@@ -1,0 +1,16 @@
+
+class ClassC1{
+    c1_prop : string(max_length=25)
+}
+
+class ClassC2{
+    c2_prop : string(max_length=25)
+}
+
+class ClassC3{
+    c3_prop : string(max_length=25)
+}
+
+class ClassC4{
+    c4_prop : string(max_length=25)
+}

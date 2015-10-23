@@ -4,11 +4,14 @@
 
 
 Module:
-    content*=ModuleContent
+    content=ModuleContent
 ;
 
 ModuleContent:
-    imports+=Import | classes+=Class | actions+=Action | bindings+=Binding
+    (imports+=Import |
+    classes+=Class |
+    actions+=Action |
+    bindings+=Binding)*
 ;
 
 Import:

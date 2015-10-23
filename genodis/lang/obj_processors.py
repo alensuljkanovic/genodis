@@ -106,5 +106,4 @@ def module_processor(module):
     """
     Model processor
     """
-    # Dictionary of all classes in model
     pass

@@ -54,3 +54,22 @@ class DecimalArgsException(CustomBaseException):
     def __init__(self, _type="decimal"):
         self.message = "Type '%s' must contain argument 'decimal_places'" % \
             _type
+
+
+class GenodisImportError(CustomBaseException):
+
+    def __init__(self, _import):
+        self.message = "No module named %s" % _import
+
+
+class GenodisClassImportError(CustomBaseException):
+
+    def __init__(self, module_name, class_name):
+        self.message = "Cannot import class %s. The class doesn't exist in \
+                       the module %s" (class_name, module_name)
+
+
+class GenodisClassNotDefined(CustomBaseException):
+
+    def __init__(self, class_name):
+        self.message = "Class %s is not defined." % class_name

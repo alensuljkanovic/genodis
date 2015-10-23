@@ -1,15 +1,15 @@
 import second_module
-from third_module import method1, method2
+from third_module import ClassC1
 
 class ClassA{
     a_property : string(max_length=10)
+    a2_property: ClassC1
 }
 
 class ClassB{
     b_property : string(max_length=5, unique)
+    b2_property : ClassA2
 }
-
-import fourth_model
 
 class ClassB{
     c_property : int
