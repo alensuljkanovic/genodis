@@ -14,8 +14,10 @@
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
       <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.js"></script>
   <script src="app.js"></script>
-  {%- for c in model.classes %}
+  {%- for module in model.modules.values() %}
+  {%- for c in module.content.classes %}
   <script src="controllers/{{c.name|lower}}_controller.js"></script>
+  {% endfor -%}
   {% endfor -%}
   <script src="actions.js"></script>
 
@@ -27,8 +29,10 @@
 
     <div>
         <ul>
-            {%- for c in model.classes %}
+            {%- for module in model.modules.values() %}
+            {%- for c in module.content.classes %}
             <a href="#{{c.name|lower}}">{{c.name}}</a>
+            {% endfor -%}
             {% endfor -%}
         </ul>
     </div>

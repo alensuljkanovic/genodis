@@ -1,14 +1,22 @@
-from genodis.utils import load_model
+from genodis.utils import load_model, get_root_path
+from genodis.generator import DjangoServerGenerator, AngularJSGenerator
+import os
 
 __author__ = 'Alen Suljkanovic'
 
 
 def test_simple_model():
 
-    model = load_model("/home/biohazard1491/genodis/tests/examples/modules")
-    for module in model.modules.values():
-        print(module.name)
+    path = os.path.join(get_root_path(), "tests", "examples",
+                        "modules_example")
+    print("PATH %s" % path)
+    model = load_model(path)
 
+    server_generator = DjangoServerGenerator(model)
+    server_generator.generate()
+
+    angular_generator = AngularJSGenerator(model, generate_as_static=True)
+    angular_generator.generate()
     # assert model.name == "Supermarket"
     # assert len(model.entities) == 3
     #

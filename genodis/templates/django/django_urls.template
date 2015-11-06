@@ -21,16 +21,24 @@ Including another URLconf
 from django.conf.urls import include, url
 from rest_framework import serializers, viewsets, routers
 from {{model.name|lower}}_app.models import
-{%- for c in model.classes -%}
+{%- for module in model.modules.values() -%}
+{%- for c in module.content.classes -%}
 {{" "}}{{c.name}}
-{%- if loop.index != model.classes|length -%}{{","}}{%- endif -%}
+{%- if loop.index != module.content.classes|length -%}{{","}}{%- endif -%} {# for loop for classes #}
+{%- endfor %}
+{%- if loop.index != model.modules|length -%}{{","}}{%- endif -%} {# for loop for modules #}
 {%- endfor %}
 
 
 #
 # Serializers define the API representation.
 #
-{% for c in model.classes %}
+{% for module_name in model.modules %}
+{%- set module = model.modules[module_name] -%}
+#
+# From module: {{module_name}}
+#
+{% for c in module.content.classes %}
 class {{c.name}}Serializer(serializers.ModelSerializer):
 
     {%- for p in c.properties %}
@@ -45,34 +53,47 @@ class {{c.name}}Serializer(serializers.ModelSerializer):
         {%- if c.foreign_key -%}
         '{{c.foreign_key.name|lower}}',
         {%- endif -%}
-        'id',
+        'id' ,
         {%- for p in c.properties -%}
         {%- if not p.list-%}
         '{{p.name}}'
-        {%- if loop.index != c.properties|length -%}{{","}}{%- endif -%}
+        {%- if loop.index != c.properties|length -%}{{", "}}{%- endif -%}
          {%- endif -%}
         {%- endfor -%}
         )
 
+{% endfor %}
 {% endfor -%}
 
 
 #
 # ViewSets define the view behavior.
 #
-{% for c in model.classes %}
+{% for module_name in model.modules %}
+{%- set module = model.modules[module_name] -%}
+#
+# From module: {{module_name}}
+#
+{% for c in module.content.classes %}
 class {{c.name}}ViewSet(viewsets.ModelViewSet):
     queryset = {{c.name}}.objects.all()
     serializer_class = {{c.name}}Serializer
 
+{% endfor -%}
 {% endfor -%}
 
 #
 # Routers provide an easy way of automatically determining the URL conf.
 #
 router = routers.DefaultRouter()
-{%- for c in model.classes %}
+{% for module_name in model.modules %}
+{%- set module = model.modules[module_name]-%}
+#
+# From module: {{module_name}}
+#
+{%- for c in module.content.classes %}
 router.register(r'{{c.name|lower}}s', {{c.name}}ViewSet)
+{%- endfor %}
 {%- endfor %}
 
 urlpatterns = [

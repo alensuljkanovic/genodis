@@ -22,11 +22,13 @@
 #}
 {%- macro const_dependency(model) -%}
 "SERVER_APP_URL",
-{%- for c in model.classes-%}
+{%- for module in model.modules.values() -%}
+{%- for c in module.content.classes-%}
 "SERVER_APP_{{c.name|upper}}_DATA"
-{%- if loop.index != model.classes|length-%}
+{%- if loop.index != module.content.classes|length-%}
 ,
 {%- endif -%}
+{%- endfor -%}
 {%- endfor -%}
 {%- endmacro -%}
 
@@ -36,10 +38,12 @@
 #}
 {%- macro const_function(model) -%}
 SERVER_APP_URL,
-{%- for c in model.classes-%}
+{%- for module in model.modules.values() -%}
+{%- for c in module.content.classes-%}
 SERVER_APP_{{c.name|upper}}_DATA
-{%- if loop.index != model.classes|length-%}
+{%- if loop.index != module.content.classes|length-%}
 ,
 {%- endif -%}
+{%- endfor -%}
 {%- endfor -%}
 {%- endmacro -%}

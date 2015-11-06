@@ -1,6 +1,7 @@
 import os
 from genodis.lang.meta import Model, get_model_meta
 from genodis.lang.exceptions import GenodisImportError, GenodisClassNotDefined
+import configparser
 
 __author__ = 'Alen Suljkanovic'
 
@@ -40,9 +41,16 @@ def load_model(path):
 
     metamodel = get_model_meta()
     model = Model()
-    for root, dirs, files in os.walk(path):
+    config_parser = configparser.ConfigParser()
+    config_parser.read(os.path.join(path, ".config"))
+
+    model.name = config_parser["app-data"]["app_name"]
+    model.version = config_parser["app-data"]["version"]
+
+    src_path = os.path.join(path, "src")
+    for root, dirs, files in os.walk(src_path):
         for f in files:
-            file_path = os.path.join(path, f)
+            file_path = os.path.join(src_path, f)
             module = metamodel.model_from_file(file_path)
             module.name = f.replace(".gm", "")
             model.modules[module.name] = module

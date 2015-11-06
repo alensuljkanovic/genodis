@@ -4,14 +4,17 @@
 
 angular.module("myApp", ["ngRoute"])
     .constant("SERVER_APP_URL", "http://127.0.0.1:8000/")
-    {%- for c in model.classes %}
+    {%- for module in model.modules.values() %}
+    {%- for c in module.content.classes %}
     .constant("SERVER_APP_{{c.name|upper}}_DATA", "{{c.name|lower}}s/")
+    {%- endfor %}
     {%- endfor %}
     .factory('dataFactory', ["$http", "$q", {{utils.const_dependency(model)}}, function($http, $q, {{utils.const_function(model)}}){
 
         var dataFactory = {};
 
-        {%- for c in model.classes %}
+        {%- for module in model.modules.values() %}
+        {%- for c in module.content.classes %}
         dataFactory.get{{c.name}}s = function(){
             return $http.get(SERVER_APP_URL + SERVER_APP_{{c.name|upper}}_DATA).then(function(response) { return response.data; });
         };
@@ -28,12 +31,14 @@ angular.module("myApp", ["ngRoute"])
             return $http.delete(SERVER_APP_URL + SERVER_APP_{{c.name|upper}}_DATA + {{c.name|lower}}.id  + "/");
         };
         {% endfor %}
+        {% endfor %}
 
         return dataFactory;
     }])
     .config(function($routeProvider){
         $routeProvider
-            {%- for c in model.classes %}
+            {%- for module in model.modules.values() %}
+            {%- for c in module.content.classes %}
             .when(
                 "/{{c.name|lower}}",
                 {
@@ -41,7 +46,8 @@ angular.module("myApp", ["ngRoute"])
                     templateUrl: "views/{{c.name|lower}}s.html"
                 })
             {% endfor -%}
-            .otherwise({redirectTo: "/{{model.classes[0].name|lower}}"})
+            {% endfor -%}
+            .otherwise({redirectTo: ""})
     })
     .controller("mainController", function($scope){
         $scope.message = "";

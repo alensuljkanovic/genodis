@@ -1,8 +1,8 @@
 import os
 import jinja2
-from consts import TEMPLATES_PATH, SRC_GEN_PATH
-from lang.meta import get_model_meta
-from utils import get_root_path
+from .consts import TEMPLATES_PATH, SRC_GEN_PATH
+from .lang.meta import get_model_meta
+from .utils import get_root_path
 
 __author__ = 'Alen Suljkanovic'
 
@@ -59,14 +59,16 @@ class DjangoServerGenerator(BaseGenerator):
         root_path = get_root_path()
         jinja_env = self.setup_env()
 
-        d = {"model": self.model, "app_name": self.model.name.lower()}
+        app_name = self.model.name.lower()
+        app_name_path = app_name.replace(" ", "_")
+        d = {"model": self.model, "app_name": app_name}
 
         destination = os.path.join(root_path, SRC_GEN_PATH)
 
         if not os.path.exists(destination):
             os.mkdir(destination)
 
-            django_path = os.path.join(destination, self.model.name.lower())
+            django_path = os.path.join(destination, app_name_path)
             os.mkdir(django_path)
             #
             # Create manage.py file
@@ -77,7 +79,7 @@ class DjangoServerGenerator(BaseGenerator):
             #
             # Create folder with settings.py, urls.py and wsgi.py
             #
-            app_settings = os.path.join(django_path, model.name.lower())
+            app_settings = os.path.join(django_path, app_name_path)
             os.mkdir(app_settings)
             self.create_init_file(app_settings)
 
@@ -93,7 +95,7 @@ class DjangoServerGenerator(BaseGenerator):
             #
             # Create app folder
             #
-            django_app = os.path.join(django_path, model.name.lower() + "_app")
+            django_app = os.path.join(django_path, app_name_path + "_app")
             os.mkdir(django_app)
             self.create_init_file(django_app)
 
@@ -137,7 +139,7 @@ class DjangoServerGenerator(BaseGenerator):
             os.mkdir(templates_path)
 
             view_templates = os.path.join(templates_path,
-                                          self.model.name.lower())
+                                          app_name_path)
             os.mkdir(view_templates)
 
             # creating folder for static files
@@ -168,7 +170,9 @@ class AngularJSGenerator(BaseGenerator):
         root_path = get_root_path()
         jinja_env = self.setup_env()
 
-        d = {"model": self.model, "app_name": self.model.name.lower()}
+        app_name = self.model.name.lower()
+        app_name_path = app_name.replace(" ", "_")
+        d = {"model": self.model, "app_name": app_name}
 
         destination = os.path.join(root_path, SRC_GEN_PATH)
 
@@ -176,7 +180,7 @@ class AngularJSGenerator(BaseGenerator):
             if not os.path.exists(destination):
                 os.mkdir(destination)
 
-            angular_app_name = self.model.name.lower() + "_js"
+            angular_app_name = app_name_path + "_js"
             angular_path = os.path.join(destination, angular_app_name)
             os.mkdir(angular_path)
 
@@ -184,8 +188,8 @@ class AngularJSGenerator(BaseGenerator):
             angular_app = os.path.join(angular_path, "app")
             os.mkdir(angular_app)
         else:
-            angular_app = os.path.join(destination, model.name.lower(),
-                                       model.name.lower() + "_app", "static")
+            angular_app = os.path.join(destination, app_name_path,
+                                       app_name_path + "_app", "static")
 
         #
         # Create app.js
@@ -212,11 +216,13 @@ class AngularJSGenerator(BaseGenerator):
         # Create controllers for all classes
         #
         template = jinja_env.get_template("controllers.template")
-        for c in self.model.classes:
-            ctlr_name = c.name.lower() + "_controller.js"
-            data = {"c": c}
-            template.stream(data).dump(os.path.join(controllers_path,
-                                                    ctlr_name))
+
+        for module in self.model.modules.values():
+            for c in module.content.classes:
+                ctlr_name = c.name.lower() + "_controller.js"
+                data = {"c": c}
+                template.stream(data).dump(os.path.join(controllers_path,
+                                                        ctlr_name))
 
         # create views folder
         views_path = os.path.join(angular_app, "views")
@@ -225,10 +231,11 @@ class AngularJSGenerator(BaseGenerator):
         # Create views for all classes
         #
         template = jinja_env.get_template("views.template")
-        for c in self.model.classes:
-            view_name = c.name.lower() + "s.html"
-            data = {"c": c}
-            template.stream(data).dump(os.path.join(views_path, view_name))
+        for module in self.model.modules.values():
+            for c in module.content.classes:
+                view_name = c.name.lower() + "s.html"
+                data = {"c": c}
+                template.stream(data).dump(os.path.join(views_path, view_name))
 
 
 if __name__ == "__main__":

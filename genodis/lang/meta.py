@@ -3,16 +3,19 @@ from textx.metamodel import metamodel_from_file
 from .obj_processors import module_processor, class_processor, \
     property_processor, action_processor, property_argument_processor
 from genodis.consts import PROPERTY_TYPES
+from collections import OrderedDict
 
 __author__ = 'Alen Suljkanovic'
 
 
 class Model(object):
 
-    def __init__(self, modules=None):
+    def __init__(self, modules=None, name=None, version=None):
         super(Model, self).__init__()
 
-        self.modules = modules if modules else {}
+        self.modules = modules if modules else OrderedDict()
+        self.name = name
+        self.version = version
 
 
 class Module(object):

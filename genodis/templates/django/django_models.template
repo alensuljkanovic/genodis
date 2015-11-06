@@ -14,7 +14,12 @@ from django.db import models
 )
 {%- endmacro %}
 
-{% for c in model.classes %}
+{% for module_name in model.modules %}
+{%- set module = model.modules[module_name] -%}
+#
+# From module: {{module_name}}
+#
+{% for c in module.content.classes %}
 class {{c.name}}(models.Model):
     {%- if c.foreign_key %}
     {{c.foreign_key.name|lower}} = models.ForeignKey({{c.foreign_key}})
@@ -25,4 +30,5 @@ class {{c.name}}(models.Model):
         {%- endif -%}
     {%- endfor %}
 
+{% endfor %}
 {% endfor %}

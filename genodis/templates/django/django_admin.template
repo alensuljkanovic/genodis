@@ -4,11 +4,16 @@
 
 from django.contrib import admin
 from {{model.name|lower}}_app.models import
-{%- for c in model.classes -%}
+{%- for module in model.modules.values() -%}
+{%- for c in module.content.classes -%}
 {{" "}}{{c.name}}
-{%- if loop.index != model.classes|length -%}{{","}}{%- endif -%}
+{%- if loop.index != module.content.classes|length -%}{{","}}{%- endif -%}
+{%- endfor %}
 {%- endfor %}
 
-{% for c in model.classes %}
+{% for module_name in model.modules %}
+{%- set module = model.modules[module_name] -%}
+{% for c in module.content.classes %}
 admin.site.register({{c.name}})
+{%- endfor %}
 {%- endfor %}
