@@ -1,6 +1,8 @@
 from .validators import TextValidator, DecimalValidator,\
     BaseValidator, CalculatedFieldValidator
 
+from .exceptions import GenodisClassRedefinitionException
+
 __author__ = 'Alen Suljkanovic'
 
 
@@ -49,7 +51,7 @@ def property_processor(property):
         "date": "DateField",
         "datetime": "DateTimeField",
         "choice": "CharField",
-        "calculated_field": "DecimalField"
+        "calculated_field": "DecimalField",
     }
 
     if property.type == "choice":

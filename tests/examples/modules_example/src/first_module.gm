@@ -10,7 +10,3 @@ class ClassB{
     b_property : string(max_length=5, unique)
     b2_property : ClassA2
 }
-
-class ClassB{
-    c_property : int
-}

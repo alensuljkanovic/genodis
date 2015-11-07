@@ -63,3 +63,7 @@ target/
 
 # Ignore generated files
 src-gen/
+
+# Ignore virtualenv files
+venv/
+.directory

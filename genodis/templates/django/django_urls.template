@@ -20,7 +20,7 @@ Including another URLconf
 
 from django.conf.urls import include, url
 from rest_framework import serializers, viewsets, routers
-from {{model.name|lower}}_app.models import
+from {{app_name}}_app.models import
 {%- for module in model.modules.values() -%}
 {%- for c in module.content.classes -%}
 {{" "}}{{c.name}}

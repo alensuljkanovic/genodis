@@ -3,12 +3,13 @@
 """
 
 from django.contrib import admin
-from {{model.name|lower}}_app.models import
+from {{app_name}}_app.models import
 {%- for module in model.modules.values() -%}
 {%- for c in module.content.classes -%}
 {{" "}}{{c.name}}
 {%- if loop.index != module.content.classes|length -%}{{","}}{%- endif -%}
 {%- endfor %}
+{%- if loop.index != model.modules|length -%}{{","}}{%- endif -%}
 {%- endfor %}
 
 {% for module_name in model.modules %}

@@ -59,8 +59,7 @@ class DjangoServerGenerator(BaseGenerator):
         root_path = get_root_path()
         jinja_env = self.setup_env()
 
-        app_name = self.model.name.lower()
-        app_name_path = app_name.replace(" ", "_")
+        app_name = self.model.name.lower().replace(" ", "_")
         d = {"model": self.model, "app_name": app_name}
 
         destination = os.path.join(root_path, SRC_GEN_PATH)
@@ -68,7 +67,7 @@ class DjangoServerGenerator(BaseGenerator):
         if not os.path.exists(destination):
             os.mkdir(destination)
 
-            django_path = os.path.join(destination, app_name_path)
+            django_path = os.path.join(destination, app_name)
             os.mkdir(django_path)
             #
             # Create manage.py file
@@ -79,7 +78,7 @@ class DjangoServerGenerator(BaseGenerator):
             #
             # Create folder with settings.py, urls.py and wsgi.py
             #
-            app_settings = os.path.join(django_path, app_name_path)
+            app_settings = os.path.join(django_path, app_name)
             os.mkdir(app_settings)
             self.create_init_file(app_settings)
 
@@ -95,7 +94,7 @@ class DjangoServerGenerator(BaseGenerator):
             #
             # Create app folder
             #
-            django_app = os.path.join(django_path, app_name_path + "_app")
+            django_app = os.path.join(django_path, app_name + "_app")
             os.mkdir(django_app)
             self.create_init_file(django_app)
 
@@ -138,8 +137,7 @@ class DjangoServerGenerator(BaseGenerator):
             templates_path = os.path.join(django_app, "templates")
             os.mkdir(templates_path)
 
-            view_templates = os.path.join(templates_path,
-                                          app_name_path)
+            view_templates = os.path.join(templates_path, app_name)
             os.mkdir(view_templates)
 
             # creating folder for static files

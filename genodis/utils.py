@@ -1,7 +1,8 @@
 import os
 from genodis.lang.meta import Model, get_model_meta
-from genodis.lang.exceptions import GenodisImportError, GenodisClassNotDefined
-import configparser
+from genodis.lang.exceptions import GenodisImportError, GenodisClassNotDefined\
+    , GenodisClassRedefinitionException
+import ConfigParser
 
 __author__ = 'Alen Suljkanovic'
 
@@ -41,21 +42,27 @@ def load_model(path):
 
     metamodel = get_model_meta()
     model = Model()
-    config_parser = configparser.ConfigParser()
+    config_parser = ConfigParser.ConfigParser()
     config_parser.read(os.path.join(path, ".config"))
 
-    model.name = config_parser["app-data"]["app_name"]
-    model.version = config_parser["app-data"]["version"]
+    model.name = config_parser.get("app-data", "app_name")
+    model.version = config_parser.get("app-data", "version")
 
     src_path = os.path.join(path, "src")
     for root, dirs, files in os.walk(src_path):
         for f in files:
             file_path = os.path.join(src_path, f)
+
             module = metamodel.model_from_file(file_path)
             module.name = f.replace(".gm", "")
+
+            module_fqn = file_path.split(path)[1].replace(".gm", "")
+            module.fqn = module_fqn[1:]
             model.modules[module.name] = module
 
-    # resolving references
+    #
+    # Resolving references
+    #
     for module in model.modules.values():
         content = module.content
         if content.imports:
@@ -97,13 +104,21 @@ def load_model(path):
                         raise GenodisImportError(selective.from_module)
 
         if content.classes:
+            class_names = [c.name for c in module.content.classes]
+            redefined = set([c for c in class_names
+                             if class_names.count(c) > 1])
+            if redefined:
+                raise GenodisClassRedefinitionException(module.fqn,
+                                                        list(redefined))
+
             for _class in content.classes:
                 for prop in _class.references:
                     local_class = content[prop.type]
                     if local_class:
                         prop.type = local_class
                     else:
-                        find_class_in_imports(content.imported_modules,
-                                              prop.type)
+                        ref = find_class_in_imports(content.imported_modules,
+                                                    prop.type)
+                        prop.type = ref
 
     return model

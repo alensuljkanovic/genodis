@@ -14,18 +14,18 @@ from django.db import models
 )
 {%- endmacro %}
 
+
 {% for module_name in model.modules %}
 {%- set module = model.modules[module_name] -%}
 #
 # From module: {{module_name}}
 #
-{% for c in module.content.classes %}
+{%- for c in module.content.classes %}
 class {{c.name}}(models.Model):
-    {%- if c.foreign_key %}
-    {{c.foreign_key.name|lower}} = models.ForeignKey({{c.foreign_key}})
-    {%- endif -%}
     {%- for p in c.properties -%}
-        {%- if not p.list and not p.readonly %}
+        {%- if p in c.references %}
+    {{p.name}} = models.ForeignKey({{p.type}})
+        {%- elif not p.list and not p.readonly %}
     {{create_property(p)}}
         {%- endif -%}
     {%- endfor %}

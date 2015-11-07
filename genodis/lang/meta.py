@@ -24,13 +24,15 @@ class Module(object):
     Python representation of model defined in grammar.
     """
 
-    def __init__(self, content=None):
+    def __init__(self, content=None, name=None, fqn=None):
         """
         Initialization of model
         """
         super(Module, self).__init__()
 
         self.content = content if content else []
+        self.name = name
+        self.fqn = fqn
 
 
 class ModuleContent(object):
@@ -126,7 +128,7 @@ class Class(object):
     """
 
     def __init__(self, parent, name, properties, session, actions=None,
-                 bindings=None):
+                 bindings=None, fqn=None):
         """
         Initialization of entity.
         """
@@ -152,6 +154,14 @@ class Class(object):
     @property
     def references(self):
         return [prop for prop in self.properties if prop.is_reference]
+
+    @property
+    def fqn(self):
+        """
+        Returns class' fqn.
+        """
+        module = self.parent.parent
+        return module.fqn + self.name.replace(" ", "_")
 
 
 class Property(object):

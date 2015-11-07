@@ -73,3 +73,21 @@ class GenodisClassNotDefined(CustomBaseException):
 
     def __init__(self, class_name):
         self.message = "Class %s is not defined." % class_name
+
+
+class GenodisClassRedefinitionException(CustomBaseException):
+
+    def __init__(self, module, classes):
+        if len(classes) == 1:
+            self.message = "Redefinition of class '%s' in module '%s'" % \
+                (classes[0], module)
+        else:
+            class_names = ""
+            for i, c in enumerate(class_names):
+                class_names += "'%s'" % c
+                if i == len(class_names) - 1:
+                    class_names += "and '%s'" % c
+                else:
+                    class_names += ","
+            self.message = "Redefinition of classes %s in module '%s'" % \
+                (class_names, module)

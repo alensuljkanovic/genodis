@@ -52,7 +52,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'supermarket_app'
+    '{{app_name}}_app'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -80,7 +80,7 @@ CORS_ALLOW_METHODS = (
 
 CORS_EXPOSE_HEADERS = ()
 
-ROOT_URLCONF = '{{model.name|lower}}.urls'
+ROOT_URLCONF = '{{app_name}}.urls'
 
 TEMPLATES = [
     {
@@ -98,7 +98,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = '{{model.name|lower}}.wsgi.application'
+WSGI_APPLICATION = '{{app_name}}.wsgi.application'
 
 
 # Database
