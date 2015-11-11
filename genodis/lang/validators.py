@@ -1,5 +1,6 @@
-from .exceptions import InvalidPropertyArgValue, \
-    InvalidPropertyArgument, InvalidDefaultArgValue, DecimalArgsException
+from .exceptions import InvalidPropertyArgValueException, \
+    InvalidPropertyArgumentException, InvalidDefaultArgValueException, \
+    DecimalArgsException
 
 __author__ = 'Alen Suljkanovic'
 
@@ -62,7 +63,7 @@ class BaseValidator(object):
                             float(arg.value)
                         valid = True
                     except:
-                        raise InvalidDefaultArgValue(arg, self.prop)
+                        raise InvalidDefaultArgValueException(arg, self.prop)
                 elif arg.name == "choices":
                     # FIXME check if value is in correct format!
                     if arg.value:
@@ -72,9 +73,9 @@ class BaseValidator(object):
                         valid = True
 
                 if not valid:
-                    raise InvalidPropertyArgValue(arg)
+                    raise InvalidPropertyArgValueException(arg)
             else:
-                raise InvalidPropertyArgument(arg, self.prop)
+                raise InvalidPropertyArgumentException(arg, self.prop)
 
     @property
     def allowed_arguments(self):

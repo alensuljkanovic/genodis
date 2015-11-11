@@ -14,10 +14,10 @@ class CustomBaseException(Exception):
         return self.message
 
 
-class InvalidPropertyArgument(CustomBaseException):
+class InvalidPropertyArgumentException(CustomBaseException):
 
     """
-    Raised in case argument is not allowed for given property type.
+    Raised in case argument is not allowed for the given property type.
     """
 
     def __init__(self, argument, property):
@@ -25,10 +25,10 @@ class InvalidPropertyArgument(CustomBaseException):
                        "property type '%s'." % (argument.name, property.type)
 
 
-class InvalidPropertyArgValue(CustomBaseException):
+class InvalidPropertyArgValueException(CustomBaseException):
 
     """
-    Raised in case value for property argument is invalid.
+    Raised in case value for the property argument is invalid.
     """
 
     def __init__(self, argument):
@@ -37,10 +37,10 @@ class InvalidPropertyArgValue(CustomBaseException):
         )
 
 
-class InvalidDefaultArgValue(CustomBaseException):
+class InvalidDefaultArgValueException(CustomBaseException):
 
     """
-    Raised when default has incorrect value.
+    Raised when the default has incorrect value.
     """
 
     def __init__(self, argument, prop):
@@ -55,27 +55,45 @@ class DecimalArgsException(CustomBaseException):
         self.message = "Type '%s' must contain argument 'decimal_places'" % \
             _type
 
+class GenodisProjectException(CustomBaseException):
+    """
+    Raised when trying to load the project which does not contain .config file.
+    """
 
-class GenodisImportError(CustomBaseException):
+    def __init__(self, path):
+        self.message = "Couldn't find Genodis project at given path: %s." % \
+            path
 
+
+class GenodisImportException(CustomBaseException):
+    """
+    Raised when trying to import unexisting module.
+    """
     def __init__(self, _import):
         self.message = "No module named %s" % _import
 
 
-class GenodisClassImportError(CustomBaseException):
-
+class GenodisContentImportException(CustomBaseException):
+    """
+    Raised when trying to import unexisting class or action.
+    """
     def __init__(self, module_name, class_name):
-        self.message = "Cannot import class %s. The class doesn't exist in \
-                       the module %s" (class_name, module_name)
+        self.message = "Cannot import class or action '%s'. It doesn't exist in \
+                       the module %s"  % (class_name, module_name)
 
 
-class GenodisClassNotDefined(CustomBaseException):
-
+class GenodisClassNotDefinedException(CustomBaseException):
+    """
+    Raised when referencing the unexisting class from property type.
+    """
     def __init__(self, class_name):
         self.message = "Class %s is not defined." % class_name
 
 
 class GenodisClassRedefinitionException(CustomBaseException):
+    """
+    Raised when the class is redefined inside the module.
+    """
 
     def __init__(self, module, classes):
         if len(classes) == 1:

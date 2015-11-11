@@ -1,0 +1,3 @@
+class ClassA{
+    test_prop : int
+}

@@ -1,0 +1,3 @@
+class TestClass{
+    test_prop : int(choices=NS: "Novi Sad", BG: "Belgrade")
+}

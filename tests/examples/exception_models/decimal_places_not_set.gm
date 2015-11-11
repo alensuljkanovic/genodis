@@ -1,0 +1,4 @@
+class TestClass{
+    test_prop : decimal(max_digits=5)
+    test_prop2 : decimal(max_digits=5, decimal_places=5)
+}

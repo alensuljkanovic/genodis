@@ -1,0 +1,9 @@
+class ClassA{
+    test_prop : int
+    test_prop2: int
+}
+
+class ClassA{
+    test_prop : string
+    test_prop2: string
+}

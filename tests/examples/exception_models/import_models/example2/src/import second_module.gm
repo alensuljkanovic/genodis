@@ -1,0 +1,5 @@
+import second_module
+
+class TestClass{
+    test_prop : int
+}

@@ -1,0 +1,5 @@
+from second_module import ClassB
+
+class TestClass{
+    test_prop : int
+}

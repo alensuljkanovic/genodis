@@ -1,7 +1,8 @@
 import os
 from genodis.lang.meta import Model, get_model_meta
-from genodis.lang.exceptions import GenodisImportError, GenodisClassNotDefined\
-    , GenodisClassRedefinitionException
+from genodis.lang.exceptions import GenodisImportException,\
+    GenodisClassNotDefinedException, GenodisClassRedefinitionException, \
+    GenodisProjectException, GenodisContentImportException
 import ConfigParser
 
 __author__ = 'Alen Suljkanovic'
@@ -28,6 +29,7 @@ def load_model(path):
             content = module.content
 
             imported_objects = imported_modules[module]
+            print(imported_objects)
             if imported_objects == "*":
                 _class = content[class_name]
                 if _class:
@@ -38,10 +40,16 @@ def load_model(path):
                     if _class.name == class_name:
                         return _class
 
-        raise GenodisClassNotDefined(class_name)
+        raise GenodisClassNotDefinedException(class_name)
+
+
+    config_path = os.path.join(path, ".config")
+    if not os.path.exists(config_path):
+        raise GenodisProjectException(path)
 
     metamodel = get_model_meta()
     model = Model()
+
     config_parser = ConfigParser.ConfigParser()
     config_parser.read(os.path.join(path, ".config"))
 
@@ -76,7 +84,7 @@ def load_model(path):
                             content.imports[index] = _import_obj
                             content.imported_modules[_import_obj] = "*"
                         else:
-                            raise GenodisImportError(_imp_module)
+                            raise GenodisImportException(_imp_module)
                 if _import.selective:
                     selective = _import.selective
                     if selective.from_module in model.modules:
@@ -96,12 +104,14 @@ def load_model(path):
                                 # TODO import actions
                                 if imp_obj in _import_obj.content:
                                     classes.append(im_content[imp_obj])
+                                else:
+                                    raise GenodisContentImportException(_import_obj.name, imp_obj)
 
                             content.imported_modules[_import_obj] = {
                                 "classes": classes, "actions": actions
                             }
                     else:
-                        raise GenodisImportError(selective.from_module)
+                        raise GenodisImportException(selective.from_module)
 
         if content.classes:
             class_names = [c.name for c in module.content.classes]
