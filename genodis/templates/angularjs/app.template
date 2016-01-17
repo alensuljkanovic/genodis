@@ -23,11 +23,11 @@ angular.module("myApp", ["ngRoute"])
             return $http.post(SERVER_APP_URL + SERVER_APP_{{c.name|upper}}_DATA, {{c.name|lower}});
         };
 
-        dataFactory.update{{c.name}} = function(supermarket){
+        dataFactory.update{{c.name}} = function({{c.name|lower}}){
             return $http.put(SERVER_APP_URL + SERVER_APP_{{c.name|upper}}_DATA, {{c.name|lower}});
         };
 
-        dataFactory.delete{{c.name}} = function(supermarket){
+        dataFactory.delete{{c.name}} = function({{c.name|lower}}){
             return $http.delete(SERVER_APP_URL + SERVER_APP_{{c.name|upper}}_DATA + {{c.name|lower}}.id  + "/");
         };
         {% endfor %}

@@ -119,8 +119,11 @@ class DecimalValidator(BaseValidator):
             elif arg.name == "decimal_places":
                 dec_places_exits = True
 
-        if max_digits_exits and not dec_places_exits:
-            raise DecimalArgsException()
+        if not max_digits_exits:
+            raise DecimalArgsException(arg="max_digits")
+
+        if not dec_places_exits:
+            raise DecimalArgsException(arg="decimal_places")
 
 
 class CalculatedFieldValidator(BaseValidator):

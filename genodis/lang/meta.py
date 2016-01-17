@@ -1,6 +1,6 @@
 import os
 from textx.metamodel import metamodel_from_file
-from .obj_processors import module_processor, class_processor, \
+from obj_processors import module_processor, class_processor, \
     property_processor, action_processor, property_argument_processor
 from genodis.consts import PROPERTY_TYPES
 from collections import OrderedDict
@@ -10,23 +10,51 @@ __author__ = 'Alen Suljkanovic'
 
 class Model(object):
 
+    """
+    Genodis model.
+    """
+
     def __init__(self, modules=None, name=None, version=None):
+        """
+        Initialization of model.
+        """
         super(Model, self).__init__()
 
         self.modules = modules if modules else OrderedDict()
         self.name = name
         self.version = version
 
+    @property
+    def sorted_modules(self):
+        """
+        Sorts modules in a way that module that imports some other modules,
+        appears in the order after those modules.
+        """
+        module_names = []
+        #
+        #  Sort modules
+        #
+        for m_name in self.modules:
+            module = self.modules[m_name]
+            if module.content.imported_modules:
+                for m in module.content.imported_modules:
+                    if m.name not in module_names:
+                        module_names.append(m.name)
+            if m_name not in module_names:
+                module_names.append(m_name)
+
+        return [self.modules[m] for m in module_names]
+
 
 class Module(object):
 
     """
-    Python representation of model defined in grammar.
+    Python representation of module defined in grammar.
     """
 
     def __init__(self, content=None, name=None, fqn=None):
         """
-        Initialization of model
+        Initialization of module
         """
         super(Module, self).__init__()
 
@@ -144,7 +172,7 @@ class Class(object):
         # Dictionary that describes relationship of one class with others.
         # Key is name of referenced class and value shows how many times
         # given class has been referenced.
-        # self.references = {}
+        self.relationships = OrderedDict()
 
         self.foreign_key = None
 
@@ -162,6 +190,16 @@ class Class(object):
         """
         module = self.parent.parent
         return module.fqn + self.name.replace(" ", "_")
+
+    def add_relationship(self, relationship, prop, ref_class):
+        """
+        Add relationship with ref_class.
+        """
+        print("Add ", self.name, " rel ", relationship, " ref ", ref_class.name)
+        if prop in self.relationships:
+            self.relationships[prop].append((relationship, ref_class))
+        else:
+            self.relationships[prop] = [(relationship, ref_class)]
 
 
 class Property(object):

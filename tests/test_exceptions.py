@@ -28,23 +28,23 @@ def test_invalid_property_argument(metamodel):
     Tests if exception will be raised when invalid argument is se to a
     property.
     """
-    model_file = os.path.join(get_root_path(), "tests", "examples",
+    module_file = os.path.join(get_root_path(), "tests", "examples",
                               "exception_models",
                               "invalid_property_argument.gm")
     with pytest.raises(InvalidPropertyArgumentException):
-        metamodel.model_from_file(model_file)
+        metamodel.model_from_file(module_file)
 
 
 def test_invalid_property_arg_value(metamodel):
     """
     Tests if exception will be raised if property value has invalid value.
     """
-    #model_file = os.path.join(get_root_path(), "tests", "examples",
+    #module_file = os.path.join(get_root_path(), "tests", "examples",
                               #"exception_models",
                               #"invalid_property_argument_value.gm")
     # Raises TextXSyntaxError
     #with pytest.raises(InvalidPropertyArgValueException):
-    #    metamodel.model_from_file(model_file)
+    #    metamodel.model_from_file(module_file)
     pass
 
 
@@ -61,11 +61,11 @@ def test_decimal_args(metamodel):
     Tests if exception will be raised if argument 'decimal_places' is not
     defined for property type 'decimal'.
     """
-    model_file = os.path.join(get_root_path(), "tests", "examples",
+    module_file = os.path.join(get_root_path(), "tests", "examples",
                               "exception_models",
                               "decimal_places_not_set.gm")
     with pytest.raises(DecimalArgsException):
-        metamodel.model_from_file(model_file)
+        metamodel.model_from_file(module_file)
 
 
 def test_genodis_project_exception():

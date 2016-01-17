@@ -1,8 +1,15 @@
+"""
+Util functions for genodis.
+"""
+
 import os
-from genodis.lang.meta import Model, get_model_meta
-from genodis.lang.exceptions import GenodisImportException,\
+from lang.meta import Model, get_model_meta
+from lang.exceptions import GenodisImportException,\
     GenodisClassNotDefinedException, GenodisClassRedefinitionException, \
     GenodisProjectException, GenodisContentImportException
+from consts import ONE_TO_ONE, ONE_TO_MANY, MANY_TO_MANY,\
+    MANY_TO_ONE, FOREIGN_KEY
+
 import ConfigParser
 
 __author__ = 'Alen Suljkanovic'
@@ -29,7 +36,6 @@ def load_model(path):
             content = module.content
 
             imported_objects = imported_modules[module]
-            print(imported_objects)
             if imported_objects == "*":
                 _class = content[class_name]
                 if _class:
@@ -122,13 +128,55 @@ def load_model(path):
                                                         list(redefined))
 
             for _class in content.classes:
-                for prop in _class.references:
-                    local_class = content[prop.type]
-                    if local_class:
-                        prop.type = local_class
-                    else:
-                        ref = find_class_in_imports(content.imported_modules,
-                                                    prop.type)
-                        prop.type = ref
 
+                for prop in _class.references:
+                    ref_class = content[prop.type]
+                    if ref_class:
+                        prop.type = ref_class
+                    else:
+                        ref_class = find_class_in_imports(
+                            content.imported_modules,
+                            prop.type
+                        )
+                        prop.type = ref_class
+
+                    if ref_class.references:
+                        for ref_prop in ref_class.references:
+                            if ref_prop.type == _class:
+                                if prop.list and ref_prop.list:
+                                    _class.add_relationship(MANY_TO_MANY, prop,
+                                                            ref_class)
+                                    #ref_class.add_relationship(MANY_TO_MANY,
+                                    #                           ref_prop,
+                                    #                           _class)
+                                elif prop.list and not ref_prop.list:
+                                    _class.add_relationship(ONE_TO_MANY, prop,
+                                                            ref_class)
+                                    #ref_class.add_relationship(MANY_TO_ONE,
+                                    #                           ref_prop,
+                                    #                           _class)
+                                elif not prop.list and ref_prop.list:
+                                    _class.add_relationship(MANY_TO_ONE, prop,
+                                                            ref_class)
+                                    #ref_class.add_relationship(ONE_TO_MANY, _class)
+                                else:
+                                    _class.add_relationship(ONE_TO_ONE, ref_class)
+                                    # ref_class.add_relationship(ONE_TO_ONE, _class)
+                    else:
+                        if prop.list:
+                            _class.add_relationship(ONE_TO_MANY, prop, ref_class)
+                            ref_class.add_relationship(MANY_TO_ONE,
+                                                       _class.name.lower(),
+                                                       _class)
+                        else:
+                            _class.add_relationship(FOREIGN_KEY, prop, ref_class)
+
+                print(_class.name)
+                for ref in _class.relationships:
+                    name = ref if isinstance(ref, unicode) else ref.name
+                    print("Prop %s" % name)
+                    ref_lst = _class.relationships[ref]
+                    for ref_data in ref_lst:
+                        print("\t rel %s" % ref_data[0])
+                        print("\t rel %s" % ref_data[1])
     return model

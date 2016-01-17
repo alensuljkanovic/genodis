@@ -29,6 +29,9 @@
 ,
 {%- endif -%}
 {%- endfor -%}
+{%- if loop.index != model.modules.values()|length-%}
+,
+{%- endif -%}
 {%- endfor -%}
 {%- endmacro -%}
 
@@ -45,5 +48,8 @@ SERVER_APP_{{c.name|upper}}_DATA
 ,
 {%- endif -%}
 {%- endfor -%}
+{%- if loop.index != model.modules.values()|length-%}
+,
+{%- endif -%}
 {%- endfor -%}
 {%- endmacro -%}

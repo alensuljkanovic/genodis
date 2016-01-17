@@ -15,17 +15,26 @@ from django.db import models
 {%- endmacro %}
 
 
-{% for module_name in model.modules %}
-{%- set module = model.modules[module_name] -%}
+{% for module in model.sorted_modules %}
 #
-# From module: {{module_name}}
+# From module: {{module.fqn}}
 #
 {%- for c in module.content.classes %}
 class {{c.name}}(models.Model):
-    {%- for p in c.properties -%}
-        {%- if p in c.references %}
+
+    {%- for p in c.relationships %}
+        {%- for rel_data in c.relationships[p] -%}
+        {%- set rel = rel_data[0] -%}
+        {%- set ref_prop = rel_data[1] -%}
+        {% if rel is foreign_key %}
     {{p.name}} = models.ForeignKey({{p.type}})
-        {%- elif not p.list and not p.readonly %}
+        {%- elif rel is many_to_one %}
+            {{p}} = models.ForeignKey({{p|capitalize}})
+        {%- endif -%}
+        {% endfor -%}
+    {% endfor %}
+    {%- for p in c.properties -%}
+        {%- if not p in c.relationships and not p.readonly %}
     {{create_property(p)}}
         {%- endif -%}
     {%- endfor %}

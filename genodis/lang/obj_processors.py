@@ -103,6 +103,23 @@ def class_processor(_class):
     """
     pass
 
+def module_content_processor(content):
+    """
+    Module content processor
+    """
+    classes_names = []
+    for c in self.classes:
+        print("Class: %s" % c.name)
+        for prop in c.references:
+            print("\prop: %s" % prop.name, prop.type)
+            if prop.type not in classes_names:
+                classes_names.append(content[prop.type].name)
+
+        if c.name not in classes_names:
+            classes_names.append(c.name)
+
+    content.classes = [content[name] for name in classes_names]
+
 
 def module_processor(module):
     """

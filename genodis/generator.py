@@ -1,8 +1,10 @@
 import os
 import jinja2
-from .consts import TEMPLATES_PATH, SRC_GEN_PATH
-from .lang.meta import get_model_meta
-from .utils import get_root_path
+from consts import TEMPLATES_PATH, SRC_GEN_PATH
+from lang.meta import get_model_meta
+from utils import get_root_path
+from env_functions import is_foreign_key, is_one_to_one, is_one_to_many,\
+    is_many_to_one, is_many_to_many
 
 __author__ = 'Alen Suljkanovic'
 
@@ -26,8 +28,8 @@ class BaseGenerator(object):
         Create __init__.py file at given path.
         """
         init_path = os.path.join(path_to_file, "__init__.py")
-        with open(init_path, "w") as f:
-            f.write("")
+        with open(init_path, "w") as _file:
+            _file.write("")
 
     def setup_env(self):
         """
@@ -36,6 +38,11 @@ class BaseGenerator(object):
         path = os.path.join(self.templates_path, self.templates_folder_name)
         file_loader = jinja2.FileSystemLoader(path)
         jinja_env = jinja2.Environment(loader=file_loader)
+        jinja_env.tests["foreign_key"] = is_foreign_key
+        jinja_env.tests["one_to_one"] = is_one_to_one
+        jinja_env.tests["one_to_many"] = is_one_to_many
+        jinja_env.tests["many_to_many"] = is_many_to_many
+        jinja_env.tests["many_to_one"] = is_many_to_one
         return jinja_env
 
     def generate(self):

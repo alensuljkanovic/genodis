@@ -51,9 +51,9 @@ class InvalidDefaultArgValueException(CustomBaseException):
 
 class DecimalArgsException(CustomBaseException):
 
-    def __init__(self, _type="decimal"):
-        self.message = "Type '%s' must contain argument 'decimal_places'" % \
-            _type
+    def __init__(self, arg, _type="decimal"):
+        self.message = "Type '%s' must contain argument '%s'" % \
+            (_type, arg)
 
 class GenodisProjectException(CustomBaseException):
     """
